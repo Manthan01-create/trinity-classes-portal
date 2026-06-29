@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Trinity Classes Student Portal - Manage grades, attendance, and fee payments.">
+    <title>Trinity Classes - Student Portal</title>
+    <!-- Google Fonts Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Background Glow Accents -->
+    <div class="glow-backdrop glow-top-right"></div>
+    <div class="glow-backdrop glow-bottom-left"></div>
+
+    <!-- Global Theme Toggle Button -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn-global" title="Toggle Light/Dark Theme">
+        <i class="fas fa-sun"></i>
+    </button>
+
+    <!-- =============== LOGIN VIEW =============== -->
+    <div id="login-container" class="flex-center">
+        <div class="login-card glass-panel fade-in">
+            <div class="login-header">
+                <img src="logo.jpg" alt="Trinity Classes Logo" class="login-logo-img">
+                <p>Welcome back! Please login to your portal</p>
+            </div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username" class="form-label">Username</label>
+                    <input type="text" id="login-username" class="form-input" placeholder="e.g. alice" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                
+                <div id="login-error" class="login-error-msg"></div>
+                
+                <button type="submit" class="action-btn">
+                    <span>Secure Login</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Quick Demo Login Presets -->
+            <div class="preset-login">
+                <p class="preset-title">Demo Credentials</p>
+                <div class="preset-buttons">
+                    <button class="preset-user-btn" data-user="alice">Alice (A+ Grade)</button>
+                    <button class="preset-user-btn" data-user="bob">Bob (B Grade)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =============== AUTHENTICATED PORTAL SHELL =============== -->
+    <div id="app-container" class="hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header" style="justify-content: center; padding: 20px;">
+                <img src="logo.jpg" alt="Trinity Classes Logo" class="sidebar-logo-img">
+            </div>
+
+            <!-- Student Mini Profile Card -->
+            <div class="sidebar-profile">
+                <div id="nav-student-avatar" class="student-avatar">TC</div>
+                <div class="profile-info">
+                    <h3 id="nav-student-name" class="profile-name">Student Name</h3>
+                    <span id="nav-student-grade" class="profile-grade">Class & Sec</span>
+                </div>
+            </div>
+
+            <!-- Sidebar Menu Links -->
+            <nav class="sidebar-menu">
+                <a href="#" class="sidebar-nav-link active" data-view="dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-nav-link" data-view="performance">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Performance</span>
+                </a>
+                <a href="#" class="sidebar-nav-link" data-view="attendance">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance</span>
+                </a>
+                <a href="#" class="sidebar-nav-link" data-view="fees">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Fees Structure</span>
+                </a>
+                <a href="#" class="sidebar-nav-link" data-view="logout" style="margin-top: auto; color: var(--danger);">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+
+            <!-- Sidebar footer theme control -->
+            <div class="sidebar-footer">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Version 2026.1</span>
+            </div>
+        </aside>
+
+        <!-- Main Dynamic content window -->
+        <main class="app-content">
+            
+            <!-- =============== VIEW: DASHBOARD =============== -->
+            <div id="view-dashboard" class="app-view fade-in">
+                <div class="view-header">
+                    <h2>Welcome Back, <span id="dash-welcome-name">Student</span>!</h2>
+                    <p>Here's an overview of your academic records and circular alerts.</p>
+                </div>
+
+                <!-- KPI metrics strip -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center"><i class="fas fa-award"></i></div>
+                        <div class="metric-details">
+                            <p>Cumulative GPA</p>
+                            <span id="dash-gpa-val" class="metric-value">0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metric-card glass-panel metric-card-circular">
+                        <div class="metric-details">
+                            <p>Attendance Rate</p>
+                            <span id="dash-attendance-rate" class="metric-value">0%</span>
+                        </div>
+                        <svg class="progress-circle-svg" width="70" height="70">
+                            <circle class="progress-circle-bg" cx="35" cy="35" r="30"></circle>
+                            <circle id="dash-attendance-circle" class="progress-circle-val" cx="35" cy="35" r="30" stroke-dasharray="188.4" stroke-dashoffset="188.4"></circle>
+                        </svg>
+                    </div>
+
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center"><i class="fas fa-hand-holding-usd"></i></div>
+                        <div class="metric-details">
+                            <p>Pending Dues</p>
+                            <span id="dash-fees-pending" class="metric-value">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Details Split -->
+                <div class="dashboard-grid">
+                    <div class="profile-summary-card glass-panel">
+                        <h3 style="font-size: 1.1rem; font-weight: 600;"><i class="fas fa-id-card" style="margin-right: 8px; color: var(--color-primary);"></i>Student Profile Details</h3>
+                        <div class="profile-grid-detail">
+                            <div class="profile-field">
+                                <span>Student ID</span>
+                                <strong id="dash-student-id">TC-XXXX-XXX</strong>
+                            </div>
+                            <div class="profile-field">
+                                <span>Current Grade</span>
+                                <strong id="dash-student-grade">Grade XX</strong>
+                            </div>
+                            <div class="profile-field">
+                                <span>Email Address</span>
+                                <strong id="dash-student-email">student@trinity.edu</strong>
+                            </div>
+                            <div class="profile-field">
+                                <span>Phone Number</span>
+                                <strong id="dash-student-phone">+1 (555) 000-0000</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="announcements-card glass-panel">
+                        <h3><i class="fas fa-bullhorn" style="margin-right: 8px; color: var(--color-secondary);"></i>Circular & Updates</h3>
+                        <div id="dash-announcements">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============== VIEW: PERFORMANCE =============== -->
+            <div id="view-performance" class="app-view hidden">
+                <div class="view-header">
+                    <h2>Academic Performance Card</h2>
+                    <p>Track your test statistics, marks distribution, and grade progress.</p>
+                </div>
+
+                <div class="perf-grid">
+                    <!-- Progress per subject -->
+                    <div class="glass-panel" style="padding: 30px;">
+                        <h3 style="margin-bottom: 20px; font-size: 1.1rem;"><i class="fas fa-book-reader" style="margin-right: 8px; color: var(--color-primary);"></i>Subject-wise Scores</h3>
+                        <div id="perf-subjects-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Interactive SVG Performance Trend line chart -->
+                    <div class="chart-container glass-panel">
+                        <div>
+                            <h3 style="font-size: 1.1rem;"><i class="fas fa-chart-area" style="margin-right: 8px; color: var(--color-secondary);"></i>Performance Trend</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Monthly mock examination average scores</p>
+                        </div>
+                        
+                        <div class="chart-svg-wrapper">
+                            <svg id="perf-chart-svg" viewBox="0 0 600 250" width="100%" height="100%">
+                                <defs>
+                                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="var(--color-primary)" stop-opacity="0.4"/>
+                                        <stop offset="100%" stop-color="var(--color-primary)" stop-opacity="0.0"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Injected dynamically -->
+                            </svg>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <i class="fas fa-info-circle"></i> Hover over points to view exact average scores
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============== VIEW: ATTENDANCE =============== -->
+            <div id="view-attendance" class="app-view hidden">
+                <div class="view-header">
+                    <h2>Attendance History Tracker</h2>
+                    <p>Monitor your classroom participation records and monthly calendars.</p>
+                </div>
+
+                <!-- Metrics layout -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center" style="color: var(--success);"><i class="fas fa-check"></i></div>
+                        <div class="metric-details">
+                            <p>Days Present</p>
+                            <span id="att-present-count" class="metric-value">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center" style="color: var(--danger);"><i class="fas fa-times"></i></div>
+                        <div class="metric-details">
+                            <p>Days Absent</p>
+                            <span id="att-absent-count" class="metric-value">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center" style="color: var(--warning);"><i class="fas fa-clock"></i></div>
+                        <div class="metric-details">
+                            <p>Days Late</p>
+                            <span id="att-late-count" class="metric-value">0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center" style="color: var(--color-secondary);"><i class="fas fa-percentage"></i></div>
+                        <div class="metric-details">
+                            <p>Attendance Rate</p>
+                            <span id="att-percentage-val" class="metric-value">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="padding: 20px; margin-bottom: 25px;">
+                    <div class="progress-bar-container" style="height: 10px; margin-bottom: 0;">
+                        <div id="att-progress-bar-gauge" class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, var(--color-primary), var(--color-secondary))"></div>
+                    </div>
+                </div>
+
+                <!-- Interactive calendar widget -->
+                <div class="calendar-card glass-panel">
+                    <div class="calendar-header">
+                        <h3 style="font-size: 1.1rem;"><i class="fas fa-calendar-alt" style="margin-right: 8px; color: var(--color-primary);"></i>June 2026</h3>
+                        <div>
+                            <button class="calendar-nav-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                            <button class="calendar-nav-btn" disabled><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="calendar-weekday">Mon</div>
+                        <div class="calendar-weekday">Tue</div>
+                        <div class="calendar-weekday">Wed</div>
+                        <div class="calendar-weekday">Thu</div>
+                        <div class="calendar-weekday">Fri</div>
+                        <div class="calendar-weekday">Sat</div>
+                        <div class="calendar-weekday">Sun</div>
+                    </div>
+                    <!-- Calendar days container -->
+                    <div id="calendar-days" class="calendar-grid">
+                        <!-- Injected dynamically -->
+                    </div>
+
+                    <!-- Calendar Legend markers -->
+                    <div class="calendar-legend">
+                        <div class="legend-item"><span class="legend-dot present"></span> Present</div>
+                        <div class="legend-item"><span class="legend-dot absent"></span> Absent</div>
+                        <div class="legend-item"><span class="legend-dot late"></span> Late</div>
+                        <div class="legend-item"><span class="legend-dot weekend"></span> Weekend</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============== VIEW: FEES =============== -->
+            <div id="view-fees" class="app-view hidden">
+                <div class="view-header">
+                    <h2>Student Fee Structure & Ledger</h2>
+                    <p>Review invoice items, total payments, pending dues, and pay securely.</p>
+                </div>
+
+                <!-- Fees metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center"><i class="fas fa-calculator"></i></div>
+                        <div class="metric-details">
+                            <p>Total Assessment</p>
+                            <span id="fee-total-bill" class="metric-value">$0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center" style="color: var(--success);"><i class="fas fa-wallet"></i></div>
+                        <div class="metric-details">
+                            <p>Total Paid Amount</p>
+                            <span id="fee-total-paid" class="metric-value">$0</span>
+                        </div>
+                    </div>
+                    <div class="metric-card glass-panel">
+                        <div class="metric-icon flex-center"><i class="fas fa-file-invoice"></i></div>
+                        <div class="metric-details">
+                            <p>Outstanding Balances</p>
+                            <span id="fee-total-pending" class="metric-value">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Redesigned Fees Workspace Grid -->
+                <div class="fees-grid">
+                    
+                    <!-- Left Block: Payment Plan Schemes & Installments Selector -->
+                    <div class="payment-plan-card glass-panel">
+                        <div class="payment-plan-header">
+                            <h3><i class="fas fa-coins" style="color: var(--color-primary); margin-right: 8px;"></i>Payment Scheme</h3>
+                            <div class="scheme-tabs">
+                                <button id="scheme-tab-full" class="scheme-tab-btn active" data-scheme="full">Pay in Full</button>
+                                <button id="scheme-tab-installments" class="scheme-tab-btn" data-scheme="installments">Installment Plan</button>
+                            </div>
+                        </div>
+
+                        <!-- Scheme View: Pay In Full -->
+                        <div id="scheme-content-full" class="scheme-content-pane">
+                            <div class="scheme-pane-details">
+                                <p class="scheme-desc-text" style="margin-top: 15px;">Clear your entire outstanding fee balance in a single secure transaction.</p>
+                                <div class="full-pay-box">
+                                    <div class="amount-due-row">
+                                        <span>Total Outstanding Dues:</span>
+                                        <strong id="full-pay-amount-label">$0.00</strong>
+                                    </div>
+                                    <button id="full-pay-btn" class="action-btn" style="width: auto; padding: 12px 24px;">
+                                        <i class="fas fa-shield-alt"></i> Pay Full Balance
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scheme View: Installment Plan -->
+                        <div id="scheme-content-installments" class="scheme-content-pane hidden">
+                            <p class="scheme-desc-text" style="margin-top: 15px;">Your pending dues are divided into interest-free monthly installments. Pay the active installment below.</p>
+                            
+                            <div class="installments-timeline" id="installments-timeline-list">
+                                <!-- Injected dynamically via JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Block: Fee Ledger breakdown -->
+                    <div class="invoice-table-container glass-panel">
+                        <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-receipt" style="margin-right: 8px; color: var(--color-secondary);"></i>Fee Ledger Details</h3>
+                        <table class="fees-table">
+                            <thead>
+                                <tr>
+                                    <th>Item Fee Description</th>
+                                    <th>Total Charge</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fees-breakdown-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!-- Transaction Receipts Ledger (Full width at bottom) -->
+                <div class="invoice-table-container glass-panel" style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.1rem;"><i class="fas fa-history" style="margin-right: 8px; color: var(--color-accent);"></i>Transaction Receipts</h3>
+                    <table class="fees-table">
+                        <thead>
+                            <tr>
+                                <th>Receipt ID</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-tbody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- =============== SIMULATED SECURE PAYMENT CHECKOUT DIALOG =============== -->
+    <div id="checkout-modal" class="modal-overlay flex-center">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3 style="font-size: 1.2rem; font-weight: 600;"><i class="fas fa-lock" style="margin-right: 8px; color: var(--success);"></i>Secure Checkout Portal</h3>
+                <button id="checkout-close-btn" class="modal-close-btn">&times;</button>
+            </div>
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label for="pay-amount" class="form-label">Payment Amount ($)</label>
+                    <input type="number" id="pay-amount" class="form-input" min="1" step="any" required>
+                </div>
+                <div class="form-group">
+                    <label for="pay-method" class="form-label">Choose Payment Method</label>
+                    <select id="pay-method" class="form-input" style="background: var(--bg-surface-opaque); cursor: pointer;">
+                        <option value="Credit Card">Credit Card / Debit Card</option>
+                        <option value="PayPal">PayPal Secure Link</option>
+                        <option value="Bank Transfer">Direct Bank Wire Transfer</option>
+                    </select>
+                </div>
+                
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; display: flex; align-items: start; gap: 8px;">
+                    <i class="fas fa-info-circle" style="color: var(--color-primary); margin-top: 2px;"></i>
+                    <span>This is a simulated sandbox secure checkout transaction for Trinity Classes portal verification. No actual charges will apply.</span>
+                </div>
+
+                <button type="submit" class="action-btn">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Process Payment</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Javascript File -->
+    <script src="app.js"></script>
+</body>
+</html>
