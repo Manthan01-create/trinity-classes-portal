@@ -1,144 +1,6 @@
-// Mock Student Database
-const studentDb = {
-    "alice": {
-        username: "alice",
-        password: "password123",
-        profile: {
-            name: "Alice Smith",
-            id: "TC-2026-084",
-            grade: "Class XII - A",
-            email: "alice.smith@trinityclasses.edu",
-            phone: "+1 (555) 123-4567",
-            avatar: "AS",
-            joinedDate: "April 2025"
-        },
-        performance: {
-            gpa: "3.85 / 4.0",
-            totalTests: 6,
-            subjects: [
-                { name: "Mathematics", score: 95, color: "#6366f1" },
-                { name: "Physics", score: 88, color: "#06b6d4" },
-                { name: "Chemistry", score: 92, color: "#a855f7" },
-                { name: "English", score: 85, color: "#ec4899" },
-                { name: "Computer Science", score: 98, color: "#10b981" }
-            ],
-            history: [
-                { month: "Jan", score: 82 },
-                { month: "Feb", score: 85 },
-                { month: "Mar", score: 90 },
-                { month: "Apr", score: 88 },
-                { month: "May", score: 94 },
-                { month: "Jun", score: 95 }
-            ]
-        },
-        attendance: {
-            rate: 93,
-            present: 132,
-            absent: 6,
-            late: 4,
-            calendar: {
-                // June 2026 (starts on a Monday, 30 days)
-                1: "present", 2: "present", 3: "present", 4: "late", 5: "present",
-                8: "present", 9: "present", 10: "absent", 11: "present", 12: "present",
-                15: "present", 16: "present", 17: "present", 18: "present", 19: "present",
-                22: "present", 23: "late", 24: "present", 25: "present", 26: "absent",
-                29: "present", 30: "present"
-            }
-        },
-        fees: {
-            total: 2500,
-            paid: 1800,
-            pending: 700,
-            activeScheme: "full",
-            installments: [
-                { id: 1, title: "1st Installment (Enrollment)", amount: 900, dueDate: "2026-04-15", status: "paid" },
-                { id: 2, title: "2nd Installment (Midterm)", amount: 900, dueDate: "2026-05-15", status: "paid" },
-                { id: 3, title: "3rd Installment (Final)", amount: 700, dueDate: "2026-06-30", status: "pending" }
-            ],
-            breakdown: [
-                { item: "Tuition Fee (Q1 & Q2)", amount: 1500, status: "paid" },
-                { item: "Science Lab Fee", amount: 300, status: "paid" },
-                { item: "Computer Lab & Tech Fee", amount: 300, status: "paid" },
-                { item: "Library & Study Material", amount: 200, status: "pending" },
-                { item: "Annual Examination Fee", amount: 200, status: "pending" }
-            ],
-            transactions: [
-                { id: "TXN-98421", date: "2026-04-10", amount: 1000, method: "Credit Card", status: "Completed" },
-                { id: "TXN-99150", date: "2026-05-05", amount: 800, method: "PayPal", status: "Completed" }
-            ]
-        }
-    },
-    "bob": {
-        username: "bob",
-        password: "password123",
-        profile: {
-            name: "Bob Jones",
-            id: "TC-2026-112",
-            grade: "Class XII - B",
-            email: "bob.jones@trinityclasses.edu",
-            phone: "+1 (555) 987-6543",
-            avatar: "BJ",
-            joinedDate: "August 2025"
-        },
-        performance: {
-            gpa: "3.42 / 4.0",
-            totalTests: 6,
-            subjects: [
-                { name: "Mathematics", score: 78, color: "#6366f1" },
-                { name: "Physics", score: 82, color: "#06b6d4" },
-                { name: "Chemistry", score: 75, color: "#a855f7" },
-                { name: "English", score: 90, color: "#ec4899" },
-                { name: "Computer Science", score: 85, color: "#10b981" }
-            ],
-            history: [
-                { month: "Jan", score: 70 },
-                { month: "Feb", score: 74 },
-                { month: "Mar", score: 73 },
-                { month: "Apr", score: 80 },
-                { month: "May", score: 82 },
-                { month: "Jun", score: 85 }
-            ]
-        },
-        attendance: {
-            rate: 86,
-            present: 122,
-            absent: 14,
-            late: 6,
-            calendar: {
-                1: "present", 2: "absent", 3: "present", 4: "present", 5: "present",
-                8: "present", 9: "late", 10: "present", 11: "absent", 12: "present",
-                15: "present", 16: "present", 17: "absent", 18: "present", 19: "late",
-                22: "present", 23: "present", 24: "present", 25: "present", 26: "present",
-                29: "absent", 30: "present"
-            }
-        },
-        fees: {
-            total: 2500,
-            paid: 1200,
-            pending: 1300,
-            activeScheme: "full",
-            installments: [
-                { id: 1, title: "1st Installment (Enrollment)", amount: 800, dueDate: "2026-04-15", status: "paid" },
-                { id: 2, title: "2nd Installment (Midterm)", amount: 900, dueDate: "2026-05-15", status: "partial", paidAmount: 400 },
-                { id: 3, title: "3rd Installment (Final)", amount: 800, dueDate: "2026-06-30", status: "pending" }
-            ],
-            breakdown: [
-                { item: "Tuition Fee (Q1 & Q2)", amount: 1500, status: "partial", paidAmount: 800 },
-                { item: "Science Lab Fee", amount: 300, status: "paid" },
-                { item: "Computer Lab & Tech Fee", amount: 300, status: "pending" },
-                { item: "Library & Study Material", amount: 200, status: "pending" },
-                { item: "Annual Examination Fee", amount: 200, status: "pending" }
-            ],
-            transactions: [
-                { id: "TXN-97305", date: "2026-04-12", amount: 800, method: "Debit Card", status: "Completed" },
-                { id: "TXN-98922", date: "2026-05-15", amount: 400, method: "Bank Transfer", status: "Completed" }
-            ]
-        }
-    }
-};
-
 // Global App State
 let currentStudent = null;
+const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:8000/api' : '/api';
 
 // Initialize app when DOM loads
 document.addEventListener("DOMContentLoaded", () => {
@@ -153,10 +15,15 @@ function initApp() {
 }
 
 // Session Management
-function checkActiveSession() {
+async function checkActiveSession() {
     const savedUser = localStorage.getItem("trinity_student");
-    if (savedUser && studentDb[savedUser]) {
-        loginStudent(savedUser);
+    if (savedUser) {
+        const loaded = await loadStudentData(savedUser);
+        if (loaded) {
+            loginStudent(savedUser);
+        } else {
+            showLoginScreen();
+        }
     } else {
         showLoginScreen();
     }
@@ -171,7 +38,6 @@ function showLoginScreen() {
 }
 
 function loginStudent(username) {
-    currentStudent = studentDb[username];
     localStorage.setItem("trinity_student", username);
     
     // UI Transitions
@@ -193,26 +59,60 @@ function logoutStudent() {
     showLoginScreen();
 }
 
+// Fetch dynamic student data from API
+async function loadStudentData(username) {
+    try {
+        const res = await fetch(`${API_BASE}/student/${username}`);
+        if (res.ok) {
+            currentStudent = await res.json();
+            return true;
+        } else {
+            console.error("Failed to load student data from API");
+            return false;
+        }
+    } catch (err) {
+        console.error("Connection error while loading student data", err);
+        return false;
+    }
+}
+
 // Authentication Listeners
 function setupAuthListeners() {
     const loginForm = document.getElementById("login-form");
-    loginForm.addEventListener("submit", (e) => {
+    loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const usernameInput = document.getElementById("login-username").value.trim().toLowerCase();
+        const usernameInput = document.getElementById("login-username").value.trim();
         const passwordInput = document.getElementById("login-password").value;
         const errorDiv = document.getElementById("login-error");
 
-        if (studentDb[usernameInput] && studentDb[usernameInput].password === passwordInput) {
-            errorDiv.innerText = "";
-            loginStudent(usernameInput);
-        } else {
-            errorDiv.innerText = "Invalid username or password. (Try 'alice' or 'bob' with 'password123')";
-            // Trigger shake animation on form
-            const formCard = document.querySelector(".login-card");
-            formCard.classList.add("shake-animation");
-            setTimeout(() => {
-                formCard.classList.remove("shake-animation");
-            }, 500);
+        try {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: usernameInput, password: passwordInput })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                errorDiv.innerText = "";
+                // Load details and log in
+                const loaded = await loadStudentData(usernameInput);
+                if (loaded) {
+                    loginStudent(usernameInput);
+                } else {
+                    errorDiv.innerText = "Error reading student database file.";
+                }
+            } else {
+                errorDiv.innerText = data.error || "Invalid username or password.";
+                // Trigger shake animation on form
+                const formCard = document.querySelector(".login-card");
+                formCard.classList.add("shake-animation");
+                setTimeout(() => {
+                    formCard.classList.remove("shake-animation");
+                }, 500);
+            }
+        } catch (err) {
+            errorDiv.innerText = "Connection error. Make sure server is running.";
         }
     });
 
@@ -229,12 +129,16 @@ function setupAuthListeners() {
 function setupNavigation() {
     const navLinks = document.querySelectorAll(".sidebar-nav-link");
     navLinks.forEach(link => {
-        link.addEventListener("click", (e) => {
+        link.addEventListener("click", async (e) => {
             e.preventDefault();
             const view = link.dataset.view;
             if (view === "logout") {
                 logoutStudent();
             } else {
+                // Fetch fresh updates on each view change
+                if (currentStudent) {
+                    await loadStudentData(currentStudent.username);
+                }
                 navigateTo(view);
             }
         });
@@ -284,7 +188,7 @@ function navigateTo(viewId) {
     }
 }
 
-// Theme Handling (Subtle addition for extra aesthetic premium points)
+// Theme Handling
 function setupThemeToggle() {
     const toggle = document.getElementById("theme-toggle-btn");
     toggle.addEventListener("click", () => {
@@ -305,7 +209,7 @@ function loadDashboardData() {
     document.getElementById("dash-student-id").innerText = currentStudent.profile.id;
     document.getElementById("dash-student-email").innerText = currentStudent.profile.email;
     document.getElementById("dash-student-grade").innerText = currentStudent.profile.grade;
-    document.getElementById("dash-student-phone").innerText = currentStudent.profile.phone;
+    document.getElementById("dash-student-phone").innerText = currentStudent.profile.phone || "+1 (555) 000-0000";
     
     // Quick Metrics
     document.getElementById("dash-gpa-val").innerText = currentStudent.performance.gpa;
@@ -327,7 +231,7 @@ function loadDashboardData() {
         pendingVal.className = "metric-value success-text";
     }
 
-    // Populate recent messages/announcements
+    // Populate announcements
     const announcements = [
         { title: "Quarterly Exam Schedule Out", desc: "Quarterly exams will commence from next Monday. Please download the schedule from the circular section.", date: "Today" },
         { title: "Science Project Submission", desc: "Physics lab manual submission deadline is June 30th. Ensure all experimental logs are signed.", date: "Yesterday" }
@@ -354,7 +258,7 @@ function loadPerformanceData() {
     document.getElementById("perf-student-id").innerText = currentStudent.profile.id;
     document.getElementById("perf-student-grade").innerText = currentStudent.profile.grade;
 
-    // Subjects list with detailed metrics and customized dynamic styling
+    // Subjects list with detailed metrics and dynamic grading
     const subjectsContainer = document.getElementById("perf-subjects-list");
     subjectsContainer.innerHTML = currentStudent.performance.subjects.map(sub => {
         let grade = "F";
@@ -373,7 +277,7 @@ function loadPerformanceData() {
                     <div class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, ${sub.color}, ${sub.color}cc)" data-target-width="${sub.score}%"></div>
                 </div>
                 <div class="subject-footer">
-                    <span>Performance: Excellent</span>
+                    <span>Performance: ${sub.score >= 60 ? 'Satisfactory' : 'Needs Focus'}</span>
                     <span class="subject-score">${sub.score}%</span>
                 </div>
             </div>
@@ -388,7 +292,7 @@ function loadPerformanceData() {
         });
     }, 100);
 
-    // Render Performance Trend SVG Chart (Vanilla SVG graph generator)
+    // Render Performance Trend SVG Chart
     renderPerformanceChart(currentStudent.performance.history);
 }
 
@@ -396,257 +300,246 @@ function renderPerformanceChart(history) {
     const svg = document.getElementById("perf-chart-svg");
     if (!svg) return;
 
-    // Clear previous elements
     svg.innerHTML = "";
 
-    const width = 600;
-    const height = 250;
-    const padding = 40;
-    
-    // Scale helper functions
-    const xScale = (index) => padding + (index * (width - 2 * padding) / (history.length - 1));
-    const yScale = (score) => height - padding - ((score - 50) * (height - 2 * padding) / 50); // Scale 50% to 100%
+    if (!history || history.length === 0) {
+        svg.innerHTML = `<text x="250" y="150" fill="var(--text-muted)" text-anchor="middle">No history data available.</text>`;
+        return;
+    }
 
-    // Draw Grid Lines (Y axis milestones)
-    for (let s = 50; s <= 100; s += 10) {
-        const y = yScale(s);
-        
-        // Grid Line
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", padding);
-        line.setAttribute("y1", y);
-        line.setAttribute("x2", width - padding);
-        line.setAttribute("y2", y);
-        line.setAttribute("class", "chart-grid-line");
-        svg.appendChild(line);
+    // Grid coordinates
+    const width = 560;
+    const height = 280;
+    const padding = 45;
+
+    const chartWidth = width - padding * 2;
+    const chartHeight = height - padding * 2;
+
+    const maxVal = 100;
+    const minVal = 0;
+
+    // Draw horizontal grid lines & labels
+    for (let i = 0; i <= 4; i++) {
+        const yVal = minVal + ((maxVal - minVal) * i) / 4;
+        const yPos = padding + chartHeight - (chartHeight * i) / 4;
+
+        // Line
+        const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        gridLine.setAttribute("x1", padding);
+        gridLine.setAttribute("y1", yPos);
+        gridLine.setAttribute("x2", width - padding);
+        gridLine.setAttribute("y2", yPos);
+        gridLine.setAttribute("stroke", "rgba(255, 255, 255, 0.05)");
+        gridLine.setAttribute("stroke-width", "1");
+        svg.appendChild(gridLine);
 
         // Label
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", padding - 10);
-        text.setAttribute("y", y + 4);
+        text.setAttribute("x", padding - 12);
+        text.setAttribute("y", yPos + 4);
+        text.setAttribute("fill", "var(--text-muted)");
+        text.setAttribute("font-size", "11px");
         text.setAttribute("text-anchor", "end");
-        text.setAttribute("class", "chart-axis-label");
-        text.textContent = s + "%";
+        text.textContent = yVal + "%";
         svg.appendChild(text);
     }
 
-    // Construct path points
-    let points = [];
-    history.forEach((data, index) => {
-        points.push(`${xScale(index)},${yScale(data.score)}`);
-    });
-    
-    // Draw Area gradient under the path line
-    const areaPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    const firstPoint = `${xScale(0)},${height - padding}`;
-    const lastPoint = `${xScale(history.length - 1)},${height - padding}`;
-    areaPath.setAttribute("d", `M ${firstPoint} L ${points.join(" L ")} L ${lastPoint} Z`);
-    areaPath.setAttribute("class", "chart-area-path");
-    svg.appendChild(areaPath);
+    // Coordinates mapping helper
+    const getCoords = (index, score) => {
+        const x = padding + (chartWidth * index) / (history.length - 1);
+        const y = padding + chartHeight - (chartHeight * (score - minVal)) / (maxVal - minVal);
+        return { x, y };
+    };
 
-    // Draw Path Line
+    let pathD = "";
+    const points = [];
+
+    // Map month tags and values
+    history.forEach((data, index) => {
+        const coords = getCoords(index, data.score);
+        points.push(coords);
+
+        if (index === 0) {
+            pathD += `M ${coords.x} ${coords.y}`;
+        } else {
+            pathD += ` L ${coords.x} ${coords.y}`;
+        }
+
+        // Draw x-axis tags
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", coords.x);
+        label.setAttribute("y", height - padding + 22);
+        label.setAttribute("fill", "var(--text-muted)");
+        label.setAttribute("font-size", "11px");
+        label.setAttribute("text-anchor", "middle");
+        label.textContent = data.month;
+        svg.appendChild(label);
+    });
+
+    // Render area path
+    if (points.length > 0) {
+        const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
+        const areaPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        areaPath.setAttribute("d", areaD);
+        areaPath.setAttribute("fill", "url(#chart-glow-gradient)");
+        areaPath.setAttribute("style", "opacity: 0.15;");
+        svg.appendChild(areaPath);
+    }
+
+    // Render line path
     const linePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    linePath.setAttribute("d", `M ${points.join(" L ")}`);
-    linePath.setAttribute("class", "chart-line-path");
+    linePath.setAttribute("d", pathD);
+    linePath.setAttribute("fill", "none");
+    linePath.setAttribute("stroke", "var(--color-primary)");
+    linePath.setAttribute("stroke-width", "3");
+    linePath.setAttribute("stroke-linecap", "round");
+    linePath.setAttribute("stroke-linejoin", "round");
     svg.appendChild(linePath);
 
-    // Draw interactive Tooltip Dots and Month labels
-    history.forEach((data, index) => {
-        const cx = xScale(index);
-        const cy = yScale(data.score);
+    // Draw circular node points
+    points.forEach((pt, index) => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", pt.x);
+        circle.setAttribute("cy", pt.y);
+        circle.setAttribute("r", "5");
+        circle.setAttribute("fill", "var(--color-primary)");
+        circle.setAttribute("stroke", "var(--bg-base)");
+        circle.setAttribute("stroke-width", "2");
 
-        // Grid marker lines for X axis
-        const xText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        xText.setAttribute("x", cx);
-        xText.setAttribute("y", height - 10);
-        xText.setAttribute("text-anchor", "middle");
-        xText.setAttribute("class", "chart-axis-label");
-        xText.textContent = data.month;
-        svg.appendChild(xText);
+        // Tooltip hover effect
+        circle.addEventListener("mouseenter", () => {
+            circle.setAttribute("r", "7");
+            showChartTooltip(svg, pt.x, pt.y, history[index].score + "%");
+        });
+        circle.addEventListener("mouseleave", () => {
+            circle.setAttribute("r", "5");
+            removeChartTooltip();
+        });
 
-        // Circular Node Dot
-        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        dot.setAttribute("cx", cx);
-        dot.setAttribute("cy", cy);
-        dot.setAttribute("r", 6);
-        dot.setAttribute("class", "chart-dot");
-        
-        // Custom Tooltip text helper
-        const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-        title.textContent = `${data.month} Average: ${data.score}%`;
-        dot.appendChild(title);
-        
-        svg.appendChild(dot);
+        svg.appendChild(circle);
     });
+}
+
+function showChartTooltip(svg, x, y, value) {
+    removeChartTooltip();
+    
+    const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    container.setAttribute("id", "chart-tooltip");
+
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", x - 28);
+    rect.setAttribute("y", y - 32);
+    rect.setAttribute("width", "56");
+    rect.setAttribute("height", "22");
+    rect.setAttribute("rx", "4");
+    rect.setAttribute("fill", "#111827");
+    rect.setAttribute("stroke", "var(--border-color-glow)");
+    rect.setAttribute("stroke-width", "1");
+    container.appendChild(rect);
+
+    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txt.setAttribute("x", x);
+    txt.setAttribute("y", y - 17);
+    txt.setAttribute("fill", "var(--text-bright)");
+    txt.setAttribute("font-size", "10px");
+    txt.setAttribute("font-weight", "bold");
+    txt.setAttribute("text-anchor", "middle");
+    txt.textContent = value;
+    container.appendChild(txt);
+
+    svg.appendChild(container);
+}
+
+function removeChartTooltip() {
+    const tooltip = document.getElementById("chart-tooltip");
+    if (tooltip) tooltip.remove();
 }
 
 // 3. Attendance View
 function loadAttendanceData() {
     if (!currentStudent) return;
 
-    // Load Metrics
-    document.getElementById("att-present-count").innerText = currentStudent.attendance.present;
-    document.getElementById("att-absent-count").innerText = currentStudent.attendance.absent;
-    document.getElementById("att-late-count").innerText = currentStudent.attendance.late;
-    document.getElementById("att-percentage-val").innerText = currentStudent.attendance.rate + "%";
+    // Header stats info
+    document.getElementById("attend-present-count").innerText = currentStudent.attendance.present;
+    document.getElementById("attend-absent-count").innerText = currentStudent.attendance.absent;
+    document.getElementById("attend-late-count").innerText = currentStudent.attendance.late;
+    document.getElementById("attend-percentage-rate").innerText = currentStudent.attendance.rate + "%";
 
-    // Set progress bar gauge
-    const attProgressGauge = document.getElementById("att-progress-bar-gauge");
-    attProgressGauge.style.width = "0%";
-    setTimeout(() => {
-        attProgressGauge.style.width = currentStudent.attendance.rate + "%";
-    }, 100);
-
-    // Calendar Generation: June 2026
-    const daysContainer = document.getElementById("calendar-days");
-    daysContainer.innerHTML = "";
-
-    const daysInMonth = 30;
-    // June 1st, 2026 is a Monday (1)
-    const startingDayOfWeek = 1;
-
-    // Add blank slots for matching correct day column
-    for (let i = 0; i < startingDayOfWeek; i++) {
-        const blank = document.createElement("div");
-        blank.className = "calendar-day empty";
-        daysContainer.appendChild(blank);
+    // Progress circle
+    const circle = document.getElementById("attend-percentage-circle");
+    if (circle) {
+        const offset = 251.2 - (251.2 * currentStudent.attendance.rate) / 100;
+        circle.style.strokeDashoffset = offset;
     }
 
-    // Populate actual days
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayDiv = document.createElement("div");
-        dayDiv.className = "calendar-day";
-        
-        const dateNum = document.createElement("span");
-        dateNum.className = "date-number";
-        dateNum.innerText = day;
-        dayDiv.appendChild(dateNum);
+    // Generate Calendar Days (June 2026 starts on Monday (1st), 30 days)
+    const grid = document.getElementById("calendar-days-grid");
+    grid.innerHTML = "";
 
-        // Determine if it's a weekend or has a specific record
-        const dayOfWeek = (startingDayOfWeek + day - 1) % 7;
+    const totalDays = 30;
+    const history = currentStudent.attendance.calendar || {};
+
+    for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement("div");
+        cell.className = "calendar-day-cell";
         
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-            dayDiv.classList.add("weekend");
-            const badge = document.createElement("span");
-            badge.className = "day-badge weekend-badge";
-            badge.innerText = "WE";
-            dayDiv.appendChild(badge);
-        } else {
-            // Apply corresponding student state
-            const status = currentStudent.attendance.calendar[day];
-            if (status) {
-                dayDiv.classList.add(status);
-                const badge = document.createElement("span");
-                badge.className = `day-badge ${status}-badge`;
-                badge.innerText = status === "present" ? "P" : status === "absent" ? "A" : "L";
-                dayDiv.appendChild(badge);
-            } else {
-                dayDiv.classList.add("not-marked");
-            }
+        const status = history[day] || "";
+        if (status) {
+            cell.classList.add(status);
         }
 
-        daysContainer.appendChild(dayDiv);
+        cell.innerHTML = `
+            <span class="day-number">${day}</span>
+            <div class="day-status-indicator"></div>
+        `;
+        grid.appendChild(cell);
     }
 }
 
-// Global payment context
+// 4. Fees View & Payment Flow
 let paymentContext = { amount: 0, type: "full", installmentId: null };
 
-function openPaymentCheckout(amount, type, installmentId) {
-    paymentContext = { amount, type, installmentId };
-    
-    const modal = document.getElementById("checkout-modal");
-    const payAmountInput = document.getElementById("pay-amount");
-    
-    payAmountInput.value = amount;
-    payAmountInput.max = amount;
-    
-    modal.classList.add("active");
-}
-
-// 4. Fee Structure View
 function loadFeesData() {
     if (!currentStudent) return;
 
-    // Hydrate top metrics
-    document.getElementById("fee-total-bill").innerText = `$${currentStudent.fees.total}`;
-    document.getElementById("fee-total-paid").innerText = `$${currentStudent.fees.paid}`;
+    // Header cards
+    document.getElementById("fees-due-amount").innerText = `$${currentStudent.fees.pending}`;
+    document.getElementById("fees-paid-amount").innerText = `$${currentStudent.fees.paid}`;
     
-    const pendingVal = document.getElementById("fee-total-pending");
-    pendingVal.innerText = `$${currentStudent.fees.pending}`;
-    
-    if (currentStudent.fees.pending > 0) {
-        pendingVal.className = "metric-value danger-text animate-pulse-subtle";
+    // Quick overall status layout
+    const feeStatusDiv = document.getElementById("fees-status-summary");
+    if (currentStudent.fees.pending === 0) {
+        feeStatusDiv.innerHTML = '<span class="status-badge paid"><i class="fas fa-check-circle"></i> Account Clear</span>';
     } else {
-        pendingVal.className = "metric-value success-text";
+        feeStatusDiv.innerHTML = '<span class="status-badge unpaid"><i class="fas fa-exclamation-circle"></i> Pending Dues</span>';
     }
 
-    // Toggle active tabs based on activeScheme
-    const scheme = currentStudent.fees.activeScheme || "full";
-    document.querySelectorAll(".scheme-tab-btn").forEach(btn => {
-        if (btn.dataset.scheme === scheme) {
-            btn.classList.add("active");
-        } else {
-            btn.classList.remove("active");
-        }
-    });
-
-    document.querySelectorAll(".scheme-content-pane").forEach(pane => {
-        pane.classList.add("hidden");
-    });
-    document.getElementById(`scheme-content-${scheme}`).classList.remove("hidden");
-
-    // Add click listeners to tabs
-    document.getElementById("scheme-tab-full").onclick = () => {
-        currentStudent.fees.activeScheme = "full";
-        loadFeesData();
-    };
-    document.getElementById("scheme-tab-installments").onclick = () => {
-        currentStudent.fees.activeScheme = "installments";
-        loadFeesData();
-    };
-
-    // Full payment view
-    document.getElementById("full-pay-amount-label").innerText = `$${currentStudent.fees.pending}`;
-    const fullPayBtn = document.getElementById("full-pay-btn");
-    if (currentStudent.fees.pending > 0) {
-        fullPayBtn.disabled = false;
-        fullPayBtn.style.opacity = 1;
-    } else {
-        fullPayBtn.disabled = true;
-        fullPayBtn.style.opacity = 0.5;
-    }
-
-    fullPayBtn.onclick = () => {
-        openPaymentCheckout(currentStudent.fees.pending, "full", null);
-    };
-
-    // Installment timeline view rendering
-    const timelineContainer = document.getElementById("installments-timeline-list");
+    // Hydrate Installment Timeline Step UI
+    const timelineContainer = document.getElementById("fees-timeline-container");
     timelineContainer.innerHTML = "";
 
-    // Determine the next unpaid/partial installment to make it the active installment
+    const installments = currentStudent.fees.installments || [];
     let firstUnpaidFound = false;
 
-    currentStudent.fees.installments.forEach(inst => {
+    installments.forEach(inst => {
         const stepDiv = document.createElement("div");
         stepDiv.className = "timeline-step";
-        
-        let markerContent = "";
-        let actionHtml = "";
+
+        let markerContent = '<i class="fas fa-circle"></i>';
         let statusText = "";
         let detailsText = "";
+        let actionHtml = "";
 
         if (inst.status === "paid") {
-            stepDiv.classList.add("paid");
+            stepDiv.classList.add("completed");
             markerContent = '<i class="fas fa-check"></i>';
-            statusText = '<span class="timeline-step-badge paid">Paid</span>';
-            detailsText = `Paid in full on ${inst.dueDate}`;
+            statusText = '<span class="timeline-step-badge completed">Paid</span>';
+            detailsText = `Fully settled on schedule • $${inst.amount}`;
         } else if (inst.status === "partial") {
             stepDiv.classList.add("active");
-            markerContent = '<i class="fas fa-exclamation-triangle" style="font-size: 0.75rem;"></i>';
-            const remaining = inst.amount - inst.paidAmount;
-            statusText = `<span class="timeline-step-badge locked" style="background: var(--warning-glow); color: var(--warning);">Due: $${remaining}</span>`;
+            markerContent = '<i class="fas fa-adjust"></i>';
+            const remaining = inst.amount - (inst.paidAmount || 0);
+            statusText = `<span class="timeline-step-badge partial">Partial (Paid $${inst.paidAmount})</span>`;
             detailsText = `Paid $${inst.paidAmount} of $${inst.amount} • Due ${inst.dueDate}`;
             
             actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${remaining}">Pay Due</button>`;
@@ -654,7 +547,6 @@ function loadFeesData() {
         } else {
             // Status is pending
             if (!firstUnpaidFound) {
-                // This is the active installment to pay
                 stepDiv.classList.add("active");
                 markerContent = '<i class="fas fa-clock"></i>';
                 statusText = `<span class="timeline-step-badge locked" style="background: var(--color-primary-glow); color: var(--color-primary);">Active Due: $${inst.amount}</span>`;
@@ -663,7 +555,6 @@ function loadFeesData() {
                 actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${inst.amount}">Pay Now</button>`;
                 firstUnpaidFound = true;
             } else {
-                // Locked/future installment
                 stepDiv.classList.add("locked");
                 markerContent = '<i class="fas fa-lock"></i>';
                 statusText = `<span class="timeline-step-badge locked">Scheduled</span>`;
@@ -685,7 +576,7 @@ function loadFeesData() {
         timelineContainer.appendChild(stepDiv);
     });
 
-    // Wire up individual pay installment buttons
+    // Wire up pay installment buttons
     document.querySelectorAll(".pay-inst-btn").forEach(btn => {
         btn.onclick = () => {
             const instId = parseInt(btn.dataset.id);
@@ -694,7 +585,7 @@ function loadFeesData() {
         };
     });
 
-    // Hydrate detailed items breakdown
+    // Hydrate detailed breakdown invoice items
     const breakdownTbody = document.getElementById("fees-breakdown-tbody");
     breakdownTbody.innerHTML = currentStudent.fees.breakdown.map(item => {
         let statusBadge = "";
@@ -727,8 +618,20 @@ function loadFeesData() {
         </tr>
     `).join("");
 
-    // Bind Payment Portal Checkout flow
+    // Setup checkout modal events
     setupCheckoutPortal();
+}
+
+function openPaymentCheckout(amount, type = "full", installmentId = null) {
+    paymentContext = { amount, type, installmentId };
+    
+    // Display modal
+    const modal = document.getElementById("checkout-modal");
+    modal.classList.add("active");
+    
+    document.getElementById("checkout-due-amount").innerText = `$${amount.toFixed(2)}`;
+    document.getElementById("pay-amount").value = amount;
+    document.getElementById("pay-amount").max = amount;
 }
 
 function setupCheckoutPortal() {
@@ -740,14 +643,13 @@ function setupCheckoutPortal() {
         modal.classList.remove("active");
     };
 
-    // Close on click background
     window.onclick = (event) => {
         if (event.target == modal) {
             modal.classList.remove("active");
         }
     };
 
-    form.onsubmit = (e) => {
+    form.onsubmit = async (e) => {
         e.preventDefault();
         
         const payVal = parseFloat(document.getElementById("pay-amount").value);
@@ -756,110 +658,62 @@ function setupCheckoutPortal() {
             return;
         }
 
-        // Simulate payment delay
+        // Processing payment button spinner
         const payBtn = form.querySelector('button[type="submit"]');
         const origText = payBtn.innerHTML;
         payBtn.disabled = true;
         payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Securely...';
 
-        setTimeout(() => {
-            // Process Transaction locally in memory
-            const txnId = "TXN-" + Math.floor(10000 + Math.random() * 90000);
-            const dateStr = new Date().toISOString().split('T')[0];
-            const payMethod = document.getElementById("pay-method").value;
-
-            // Update pending balances
-            currentStudent.fees.paid += payVal;
-            currentStudent.fees.pending -= payVal;
-
-            // Add receipt record
-            currentStudent.fees.transactions.unshift({
-                id: txnId,
-                date: dateStr,
-                amount: payVal,
-                method: payMethod,
-                status: "Completed"
+        try {
+            const res = await fetch(`${API_BASE}/student/${currentStudent.username}/pay`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: payVal,
+                    method: document.getElementById("pay-method").value,
+                    installmentId: paymentContext.installmentId
+                })
             });
 
-            // Adjust installment state based on payment context
-            if (paymentContext.type === "installment") {
-                const inst = currentStudent.fees.installments.find(i => i.id === paymentContext.installmentId);
-                if (inst) {
-                    if (inst.status === "partial") {
-                        const remaining = inst.amount - inst.paidAmount;
-                        if (payVal >= remaining) {
-                            inst.status = "paid";
-                            delete inst.paidAmount;
-                        } else {
-                            inst.paidAmount += payVal;
-                        }
-                    } else {
-                        if (payVal >= inst.amount) {
-                            inst.status = "paid";
-                        } else {
-                            inst.status = "partial";
-                            inst.paidAmount = payVal;
-                        }
-                    }
-                }
-            } else {
-                // Paid in full
-                currentStudent.fees.installments.forEach(inst => {
-                    inst.status = "paid";
-                    if (inst.paidAmount) delete inst.paidAmount;
+            const data = await res.json();
+            
+            if (res.ok) {
+                // Update local storage record
+                currentStudent.fees = data.fees;
+                
+                // Hide payment modal
+                modal.classList.remove("active");
+
+                // Reset submit button state
+                payBtn.disabled = false;
+                payBtn.innerHTML = origText;
+
+                // Refresh fee content views
+                loadFeesData();
+
+                // Display success receipt modal
+                triggerReceiptReceiptPopup({
+                    txnId: data.transaction.id,
+                    date: data.transaction.date,
+                    amount: payVal,
+                    method: data.transaction.method,
+                    student: currentStudent.profile.name,
+                    pending: currentStudent.fees.pending
                 });
+            } else {
+                alert(data.error || "Payment processing failed. Server rejected request.");
+                payBtn.disabled = false;
+                payBtn.innerHTML = origText;
             }
-
-            // Adjust invoice status breakdowns
-            let remainingPayValue = payVal;
-            currentStudent.fees.breakdown.forEach(item => {
-                if (item.status === "pending" && remainingPayValue > 0) {
-                    if (remainingPayValue >= item.amount) {
-                        remainingPayValue -= item.amount;
-                        item.status = "paid";
-                    } else {
-                        item.status = "partial";
-                        item.paidAmount = remainingPayValue;
-                        remainingPayValue = 0;
-                    }
-                } else if (item.status === "partial" && remainingPayValue > 0) {
-                    const outstanding = item.amount - item.paidAmount;
-                    if (remainingPayValue >= outstanding) {
-                        remainingPayValue -= outstanding;
-                        item.status = "paid";
-                        delete item.paidAmount;
-                    } else {
-                        item.paidAmount += remainingPayValue;
-                        remainingPayValue = 0;
-                    }
-                }
-            });
-
-            // Hide payment modal
-            modal.classList.remove("active");
-
-            // Reset submit button state
+        } catch (err) {
+            alert("Connection error. Payment sync failed.");
             payBtn.disabled = false;
             payBtn.innerHTML = origText;
-
-            // Refresh fee content views
-            loadFeesData();
-
-            // Display beautiful payment success receipts popup
-            triggerReceiptReceiptPopup({
-                txnId: txnId,
-                date: dateStr,
-                amount: payVal,
-                method: payMethod,
-                student: currentStudent.profile.name,
-                pending: currentStudent.fees.pending
-            });
-        }, 1500);
+        }
     };
 }
 
 function triggerReceiptReceiptPopup(receipt) {
-    // Generate simple custom HTML overlay for simulated receipt
     const overlay = document.createElement("div");
     overlay.className = "receipt-overlay flex-center";
     overlay.innerHTML = `
