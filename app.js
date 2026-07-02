@@ -1,6 +1,8 @@
 // Global App State
 let currentStudent = null;
-const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:8000/api' : '/api';
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+    ? 'http://localhost:8000/api'
+    : 'https://trinity-classes-portal-1.onrender.com/api';
 
 // Initialize app when DOM loads
 document.addEventListener("DOMContentLoaded", () => {

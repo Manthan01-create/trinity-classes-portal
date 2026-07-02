@@ -5,7 +5,9 @@ let filteredStudents = [];
 let selectedStudent = null;
 let activeTab = 'profile';
 
-const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:8000/api' : '/api';
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+    ? 'http://localhost:8000/api'
+    : 'https://trinity-classes-portal-1.onrender.com/api';
 
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
