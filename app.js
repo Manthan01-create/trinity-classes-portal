@@ -273,154 +273,174 @@ function loadPerformanceData() {
         });
     }, 100);
 
-    renderPerformanceChart(currentStudent.performance.history);
+    renderPieChart(currentStudent.performance.subjects);
 }
 
-function renderPerformanceChart(history) {
+function renderPieChart(subjects) {
     const svg = document.getElementById("perf-chart-svg");
     if (!svg) return;
-
     svg.innerHTML = "";
 
-    if (!history || history.length === 0) {
-        svg.innerHTML = `<text x="250" y="125" fill="var(--text-muted)" text-anchor="middle">No history data available.</text>`;
+    if (!subjects || subjects.length === 0) {
+        svg.innerHTML = `<text x="300" y="125" fill="var(--text-muted)" text-anchor="middle">No performance data available.</text>`;
         return;
     }
 
-    const width = 560;
-    const height = 210; // Matches index.html viewBox height 250 with margins
-    const padding = 40;
+    const totalScore = subjects.reduce((sum, sub) => sum + sub.score, 0);
 
-    const chartWidth = width - padding * 2;
-    const chartHeight = height - padding * 2;
+    // Center coordinates and radius
+    const cx = 160;
+    const cy = 125;
+    const r = 90;
 
-    const maxVal = 100;
-    const minVal = 0;
+    let startAngle = 0;
+    const legendItems = [];
 
-    for (let i = 0; i <= 4; i++) {
-        const yVal = minVal + ((maxVal - minVal) * i) / 4;
-        const yPos = padding + chartHeight - (chartHeight * i) / 4;
+    subjects.forEach((sub) => {
+        const sliceShare = sub.score / totalScore;
+        const angleDegrees = sliceShare * 360;
+        const endAngle = startAngle + angleDegrees;
 
-        const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        gridLine.setAttribute("x1", padding);
-        gridLine.setAttribute("y1", yPos);
-        gridLine.setAttribute("x2", width - padding);
-        gridLine.setAttribute("y2", yPos);
-        gridLine.setAttribute("stroke", "rgba(255, 255, 255, 0.05)");
-        gridLine.setAttribute("stroke-width", "1");
-        svg.appendChild(gridLine);
+        // Radians math
+        const radStart = (startAngle - 90) * Math.PI / 180;
+        const radEnd = (endAngle - 90) * Math.PI / 180;
 
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", padding - 10);
-        text.setAttribute("y", yPos + 4);
-        text.setAttribute("fill", "var(--text-muted)");
-        text.setAttribute("font-size", "10px");
-        text.setAttribute("text-anchor", "end");
-        text.textContent = yVal + "%";
-        svg.appendChild(text);
-    }
+        const x1 = cx + r * Math.cos(radStart);
+        const y1 = cy + r * Math.sin(radStart);
+        const x2 = cx + r * Math.cos(radEnd);
+        const y2 = cy + r * Math.sin(radEnd);
 
-    const getCoords = (index, score) => {
-        const x = padding + (chartWidth * index) / (history.length - 1);
-        const y = padding + chartHeight - (chartHeight * (score - minVal)) / (maxVal - minVal);
-        return { x, y };
-    };
+        const largeArcFlag = angleDegrees > 180 ? 1 : 0;
+        const pathData = `
+            M ${cx} ${cy}
+            L ${x1} ${y1}
+            A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2}
+            Z
+        `;
 
-    let pathD = "";
-    const points = [];
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData.trim());
+        path.setAttribute("fill", sub.color);
+        path.setAttribute("stroke", "var(--bg-base)");
+        path.setAttribute("stroke-width", "2");
+        path.setAttribute("style", "transition: transform 0.2s ease; cursor: pointer;");
 
-    history.forEach((data, index) => {
-        const coords = getCoords(index, data.score);
-        points.push(coords);
+        // Hover offset translation towards the arc center
+        const middleAngle = startAngle + angleDegrees / 2 - 90;
+        const radMiddle = middleAngle * Math.PI / 180;
+        const offsetX = Math.cos(radMiddle) * 6;
+        const offsetY = Math.sin(radMiddle) * 6;
 
-        if (index === 0) {
-            pathD += `M ${coords.x} ${coords.y}`;
-        } else {
-            pathD += ` L ${coords.x} ${coords.y}`;
-        }
+        path.addEventListener("mouseenter", () => {
+            path.setAttribute("transform", `translate(${offsetX}, ${offsetY})`);
+            showPieTooltip(svg, cx, cy, sub.name, sub.score);
+        });
+        path.addEventListener("mouseleave", () => {
+            path.removeAttribute("transform");
+            removePieTooltip(svg, cx, cy);
+        });
 
-        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        label.setAttribute("x", coords.x);
-        label.setAttribute("y", height - padding + 18);
-        label.setAttribute("fill", "var(--text-muted)");
-        label.setAttribute("font-size", "10px");
-        label.setAttribute("text-anchor", "middle");
-        label.textContent = data.month;
-        svg.appendChild(label);
+        svg.appendChild(path);
+        
+        legendItems.push({
+            name: sub.name,
+            score: sub.score,
+            color: sub.color
+        });
+
+        startAngle = endAngle;
     });
 
-    if (points.length > 0) {
-        const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
-        const areaPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        areaPath.setAttribute("d", areaD);
-        areaPath.setAttribute("fill", "url(#areaGradient)");
-        svg.appendChild(areaPath);
-    }
+    // Donut center cover
+    const innerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    innerCircle.setAttribute("cx", cx);
+    innerCircle.setAttribute("cy", cy);
+    innerCircle.setAttribute("r", "50");
+    innerCircle.setAttribute("fill", "var(--bg-base)");
+    innerCircle.setAttribute("stroke", "rgba(255, 255, 255, 0.05)");
+    innerCircle.setAttribute("stroke-width", "1");
+    svg.appendChild(innerCircle);
 
-    const linePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    linePath.setAttribute("d", pathD);
-    linePath.setAttribute("fill", "none");
-    linePath.setAttribute("stroke", "var(--color-primary)");
-    linePath.setAttribute("stroke-width", "3");
-    linePath.setAttribute("stroke-linecap", "round");
-    linePath.setAttribute("stroke-linejoin", "round");
-    svg.appendChild(linePath);
+    // Initial label in center
+    showPieTooltip(svg, cx, cy, "Average", Math.round(totalScore / subjects.length));
 
-    points.forEach((pt, index) => {
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", pt.x);
-        circle.setAttribute("cy", pt.y);
-        circle.setAttribute("r", "4");
-        circle.setAttribute("fill", "var(--color-primary)");
-        circle.setAttribute("stroke", "var(--bg-base)");
-        circle.setAttribute("stroke-width", "2");
+    // Legend on the Right
+    const legendStartX = 310;
+    const legendStartY = 45;
+    const rowHeight = 32;
 
-        circle.addEventListener("mouseenter", () => {
-            circle.setAttribute("r", "6");
-            showChartTooltip(svg, pt.x, pt.y, history[index].score + "%");
-        });
-        circle.addEventListener("mouseleave", () => {
-            circle.setAttribute("r", "4");
-            removeChartTooltip();
-        });
+    legendItems.forEach((item, idx) => {
+        const yPos = legendStartY + idx * rowHeight;
 
-        svg.appendChild(circle);
+        // Bullet Dot
+        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", legendStartX);
+        dot.setAttribute("cy", yPos);
+        dot.setAttribute("r", "6");
+        dot.setAttribute("fill", item.color);
+        svg.appendChild(dot);
+
+        // Name
+        const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        nameText.setAttribute("x", legendStartX + 18);
+        nameText.setAttribute("y", yPos + 4);
+        nameText.setAttribute("fill", "var(--text-bright)");
+        nameText.setAttribute("font-size", "11px");
+        nameText.setAttribute("font-weight", "500");
+        nameText.textContent = item.name;
+        svg.appendChild(nameText);
+
+        // Score percentage
+        const scoreText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        scoreText.setAttribute("x", legendStartX + 210);
+        scoreText.setAttribute("y", yPos + 4);
+        scoreText.setAttribute("fill", "var(--text-muted)");
+        scoreText.setAttribute("font-size", "11px");
+        scoreText.setAttribute("font-weight", "bold");
+        scoreText.setAttribute("text-anchor", "end");
+        scoreText.textContent = `${item.score}%`;
+        svg.appendChild(scoreText);
     });
 }
 
-function showChartTooltip(svg, x, y, value) {
-    removeChartTooltip();
+function showPieTooltip(svg, cx, cy, name, score) {
+    const existing = document.getElementById("pie-tooltip");
+    if (existing) existing.remove();
     
     const container = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    container.setAttribute("id", "chart-tooltip");
+    container.setAttribute("id", "pie-tooltip");
+    
+    const textName = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    textName.setAttribute("x", cx);
+    textName.setAttribute("y", cy - 5);
+    textName.setAttribute("fill", "var(--text-muted)");
+    textName.setAttribute("font-size", "10px");
+    textName.setAttribute("text-anchor", "middle");
+    textName.textContent = name;
+    container.appendChild(textName);
 
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", x - 25);
-    rect.setAttribute("y", y - 30);
-    rect.setAttribute("width", "50");
-    rect.setAttribute("height", "20");
-    rect.setAttribute("rx", "3");
-    rect.setAttribute("fill", "#111827");
-    rect.setAttribute("stroke", "var(--border-color-glow)");
-    rect.setAttribute("stroke-width", "1");
-    container.appendChild(rect);
-
-    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    txt.setAttribute("x", x);
-    txt.setAttribute("y", y - 16);
-    txt.setAttribute("fill", "var(--text-bright)");
-    txt.setAttribute("font-size", "10px");
-    txt.setAttribute("font-weight", "bold");
-    txt.setAttribute("text-anchor", "middle");
-    txt.textContent = value;
-    container.appendChild(txt);
+    const textScore = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    textScore.setAttribute("x", cx);
+    textScore.setAttribute("y", cy + 15);
+    textScore.setAttribute("fill", "var(--text-bright)");
+    textScore.setAttribute("font-size", "16px");
+    textScore.setAttribute("font-weight", "bold");
+    textScore.setAttribute("text-anchor", "middle");
+    textScore.textContent = `${score}%`;
+    container.appendChild(textScore);
 
     svg.appendChild(container);
 }
 
-function removeChartTooltip() {
-    const tooltip = document.getElementById("chart-tooltip");
+function removePieTooltip(svg, cx, cy) {
+    const tooltip = document.getElementById("pie-tooltip");
     if (tooltip) tooltip.remove();
+    
+    if (cx && cy && currentStudent && currentStudent.performance.subjects.length > 0) {
+        const total = currentStudent.performance.subjects.reduce((sum, sub) => sum + sub.score, 0);
+        const avg = Math.round(total / currentStudent.performance.subjects.length);
+        showPieTooltip(svg, cx, cy, "Average", avg);
+    }
 }
 
 // 3. Attendance View
@@ -535,26 +555,7 @@ function loadFeesData() {
     fullTabBtn.onclick = () => setSchemeView("full");
     instTabBtn.onclick = () => setSchemeView("installments");
 
-    // Hydrate invoice breakdown items matching index.html tbody
-    const breakdownTbody = document.getElementById("fees-breakdown-tbody");
-    breakdownTbody.innerHTML = currentStudent.fees.breakdown.map(item => {
-        let statusBadge = "";
-        if (item.status === "paid") {
-            statusBadge = '<span class="status-badge paid">Paid</span>';
-        } else if (item.status === "pending") {
-            statusBadge = '<span class="status-badge unpaid">Unpaid</span>';
-        } else {
-            statusBadge = `<span class="status-badge partial">Partial (Paid $${item.paidAmount})</span>`;
-        }
-
-        return `
-            <tr>
-                <td>${item.item}</td>
-                <td>$${item.amount}</td>
-                <td>${statusBadge}</td>
-            </tr>
-        `;
-    }).join("");
+    // breakdown table removed
 
     // Hydrate transaction logs matching index.html tbody
     const transTbody = document.getElementById("transactions-tbody");

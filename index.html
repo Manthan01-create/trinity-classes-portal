@@ -373,27 +373,25 @@
                         </div>
                     </div>
 
-                    <!-- Fee Ledger Details table removed -->
+                    <!-- Right Block: Transaction Receipts (Moved in place of fee ledger) -->
+                    <div class="invoice-table-container glass-panel" style="margin-top: 0; display: flex; flex-direction: column;">
+                        <h3 style="margin-bottom: 15px; font-size: 1.1rem;"><i class="fas fa-history" style="margin-right: 8px; color: var(--color-accent);"></i>Transaction Receipts</h3>
+                        <table class="fees-table">
+                            <thead>
+                                <tr>
+                                    <th>Receipt ID</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-tbody">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
 
-                </div>
-
-                <!-- Transaction Receipts Ledger (Full width at bottom) -->
-                <div class="invoice-table-container glass-panel" style="margin-top: 30px;">
-                    <h3 style="margin-bottom: 20px; font-size: 1.1rem;"><i class="fas fa-history" style="margin-right: 8px; color: var(--color-accent);"></i>Transaction Receipts</h3>
-                    <table class="fees-table">
-                        <thead>
-                            <tr>
-                                <th>Receipt ID</th>
-                                <th>Date</th>
-                                <th>Amount</th>
-                                <th>Method</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactions-tbody">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
