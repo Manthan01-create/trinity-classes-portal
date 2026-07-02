@@ -14,6 +14,10 @@ app.use(express.static(__dirname));
 
 // Seed database with mock data if it does not exist
 const initialDb = {
+  "_announcements": [
+    { "id": 1, "title": "Quarterly Exam Schedule Out", "desc": "Quarterly exams will commence from next Monday. Please download the schedule from the circular section.", "date": "2026-07-02" },
+    { "id": 2, "title": "Science Project Submission", "desc": "Physics lab manual submission deadline is June 30th. Ensure all experimental logs are signed.", "date": "2026-06-30" }
+  ],
   "alice": {
     username: "alice",
     password: "password123",
@@ -340,18 +344,20 @@ app.post('/api/admin/login', (req, res) => {
 // Get Student List (Summary details)
 app.get('/api/admin/students', (req, res) => {
   const db = getDatabase();
-  const summary = Object.keys(db).map(key => {
-    const s = db[key];
-    return {
-      username: s.username,
-      name: s.profile.name,
-      id: s.profile.id,
-      grade: s.profile.grade,
-      email: s.profile.email,
-      attendanceRate: s.attendance.rate,
-      feesPending: s.fees.pending
-    };
-  });
+  const summary = Object.keys(db)
+    .filter(key => !key.startsWith('_'))
+    .map(key => {
+      const s = db[key];
+      return {
+        username: s.username,
+        name: s.profile.name,
+        id: s.profile.id,
+        grade: s.profile.grade,
+        email: s.profile.email,
+        attendanceRate: s.attendance.rate,
+        feesPending: s.fees.pending
+      };
+    });
   res.json(summary);
 });
 
@@ -483,6 +489,83 @@ app.delete('/api/admin/student/:username', (req, res) => {
   } else {
     res.status(404).json({ error: "Student not found" });
   }
+});
+
+// GET Global Announcements
+app.get('/api/announcements', (req, res) => {
+  const db = getDatabase();
+  const announcements = db._announcements || [];
+  res.json(announcements);
+});
+
+// PUT / UPDATE Global Announcements
+app.post('/api/admin/announcements', (req, res) => {
+  const { announcements } = req.body;
+  if (!Array.isArray(announcements)) {
+    return res.status(400).json({ error: "Invalid announcements payload" });
+  }
+
+  const db = getDatabase();
+  db._announcements = announcements;
+  saveDatabase(db);
+
+  res.json({ success: true, message: "Announcements updated successfully" });
+});
+
+// POST Batch Attendance Mark
+app.post('/api/admin/batch-attendance', (req, res) => {
+  const { day, absentees } = req.body;
+
+  if (day === undefined || !Array.isArray(absentees)) {
+    return res.status(400).json({ error: "Missing required June day number or absentees array" });
+  }
+
+  const db = getDatabase();
+  const cleanAbsentees = absentees.map(name => name.trim().toLowerCase());
+
+  // Loop over all registry entries
+  Object.keys(db).forEach(key => {
+    if (key.startsWith('_')) return; // skip metadata
+
+    const student = db[key];
+    if (!student.attendance.calendar) {
+      student.attendance.calendar = {};
+    }
+
+    const studentUsername = student.username.toLowerCase();
+    const studentName = student.profile.name.toLowerCase();
+
+    // Check if the student matches any of the absentees by username or full name
+    const isAbsent = cleanAbsentees.some(abs => 
+      studentUsername === abs || studentName === abs || studentName.includes(abs)
+    );
+
+    // Set day status
+    student.attendance.calendar[day] = isAbsent ? "absent" : "present";
+
+    // Recalculate attendance stats
+    let present = 0;
+    let absent = 0;
+    let late = 0;
+
+    Object.keys(student.attendance.calendar).forEach(d => {
+      const status = student.attendance.calendar[d];
+      if (status === 'present') present++;
+      else if (status === 'absent') absent++;
+      else if (status === 'late') late++;
+    });
+
+    const total = present + absent + late;
+    const rate = total > 0 ? Math.round(((present + (late * 0.5)) / total) * 100) : 0;
+
+    student.attendance.present = present;
+    student.attendance.absent = absent;
+    student.attendance.late = late;
+    student.attendance.rate = rate;
+  });
+
+  saveDatabase(db);
+  res.json({ success: true, message: "Batch attendance successfully updated" });
 });
 
 // Catch-all route to serve Student Portal
