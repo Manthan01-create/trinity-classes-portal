@@ -97,7 +97,9 @@ function triggerShake() {
 async function loadStudentsRegistry() {
     const listContainer = document.getElementById("admin-student-list");
     try {
-        const res = await fetch(`${API_BASE}/admin/students`);
+        const res = await fetch(`${API_BASE}/admin/students?_cb=${new Date().getTime()}`, {
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
         if (res.ok) {
             studentsList = await res.json();
             filteredStudents = [...studentsList];
@@ -249,7 +251,6 @@ function renderStudentEditor() {
     document.getElementById("edit-fee-pending").value = selectedStudent.fees.pending || 0;
     document.getElementById("edit-fee-scheme").value = selectedStudent.fees.activeScheme || "installments";
     renderInstallmentsList();
-    renderBreakdownList();
     renderTransactionsTable();
 
     // Automatically recalculate pending fee when total/paid change
@@ -458,54 +459,7 @@ document.getElementById("add-installment-btn").onclick = () => {
     renderInstallmentsList();
 };
 
-// B. Breakdown Items
-function renderBreakdownList() {
-    const container = document.getElementById("edit-breakdown-list");
-    container.innerHTML = "";
-
-    const items = selectedStudent.fees.breakdown || [];
-
-    if (items.length === 0) {
-        container.innerHTML = `<div style="color: var(--text-muted); font-style: italic;">No invoice items configured.</div>`;
-        return;
-    }
-
-    items.forEach((item, idx) => {
-        const row = document.createElement("div");
-        row.className = "installment-editor-row";
-        row.innerHTML = `
-            <input type="text" class="form-input bkd-item" value="${item.item}" placeholder="Fee Component (e.g Tuition)" style="flex: 2;">
-            <input type="number" class="form-input bkd-amount" value="${item.amount}" placeholder="Amount $" style="width: 100px;">
-            <select class="form-input bkd-status" style="width: 120px;">
-                <option value="pending" ${item.status === 'pending'?'selected':''}>Pending</option>
-                <option value="partial" ${item.status === 'partial'?'selected':''}>Partial</option>
-                <option value="paid" ${item.status === 'paid'?'selected':''}>Paid</option>
-            </select>
-            <button class="icon-btn-action delete-bkd-row-btn" data-index="${idx}" title="Delete Item" style="background: var(--danger-glow); color: var(--danger);">
-                <i class="fas fa-trash"></i>
-            </button>
-        `;
-        container.appendChild(row);
-    });
-
-    container.querySelectorAll(".delete-bkd-row-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const idx = parseInt(btn.dataset.index);
-            selectedStudent.fees.breakdown.splice(idx, 1);
-            renderBreakdownList();
-        });
-    });
-}
-
-document.getElementById("add-breakdown-btn").onclick = () => {
-    if (!selectedStudent.fees.breakdown) selectedStudent.fees.breakdown = [];
-    selectedStudent.fees.breakdown.push({
-        item: "Supplementary Fee",
-        amount: 0,
-        status: "pending"
-    });
-    renderBreakdownList();
-};
+// B. Breakdown Items removed
 
 // C. Transactions Log
 function renderTransactionsTable() {
@@ -695,19 +649,6 @@ document.getElementById("save-student-btn").onclick = async () => {
         });
     });
     selectedStudent.fees.installments = installments;
-
-    // Breakdown rows
-    const bkdRows = document.querySelectorAll("#edit-breakdown-list .installment-editor-row");
-    const breakdown = [];
-    bkdRows.forEach(row => {
-        const item = row.querySelector(".bkd-item").value.trim();
-        const amount = parseFloat(row.querySelector(".bkd-amount").value) || 0;
-        const status = row.querySelector(".bkd-status").value;
-        if (item) {
-            breakdown.push({ item, amount, status });
-        }
-    });
-    selectedStudent.fees.breakdown = breakdown;
 
     // Send payload to API
     try {

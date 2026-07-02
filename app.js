@@ -64,7 +64,9 @@ function logoutStudent() {
 // Fetch dynamic student data from API
 async function loadStudentData(username) {
     try {
-        const res = await fetch(`${API_BASE}/student/${username}`);
+        const res = await fetch(`${API_BASE}/student/${username}?_cb=${new Date().getTime()}`, {
+            headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+        });
         if (res.ok) {
             currentStudent = await res.json();
             return true;
