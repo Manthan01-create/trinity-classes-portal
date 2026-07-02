@@ -384,7 +384,7 @@ function renderPieChart(subjects) {
         const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
         nameText.setAttribute("x", legendStartX + 18);
         nameText.setAttribute("y", yPos + 4);
-        nameText.setAttribute("fill", "var(--text-bright)");
+        nameText.setAttribute("class", "pie-legend-text");
         nameText.setAttribute("font-size", "11px");
         nameText.setAttribute("font-weight", "500");
         nameText.textContent = item.name;
@@ -394,7 +394,7 @@ function renderPieChart(subjects) {
         const scoreText = document.createElementNS("http://www.w3.org/2000/svg", "text");
         scoreText.setAttribute("x", legendStartX + 210);
         scoreText.setAttribute("y", yPos + 4);
-        scoreText.setAttribute("fill", "var(--text-muted)");
+        scoreText.setAttribute("class", "pie-legend-score");
         scoreText.setAttribute("font-size", "11px");
         scoreText.setAttribute("font-weight", "bold");
         scoreText.setAttribute("text-anchor", "end");
@@ -413,7 +413,7 @@ function showPieTooltip(svg, cx, cy, name, score) {
     const textName = document.createElementNS("http://www.w3.org/2000/svg", "text");
     textName.setAttribute("x", cx);
     textName.setAttribute("y", cy - 5);
-    textName.setAttribute("fill", "var(--text-muted)");
+    textName.setAttribute("class", "pie-tooltip-name");
     textName.setAttribute("font-size", "10px");
     textName.setAttribute("text-anchor", "middle");
     textName.textContent = name;
@@ -422,7 +422,7 @@ function showPieTooltip(svg, cx, cy, name, score) {
     const textScore = document.createElementNS("http://www.w3.org/2000/svg", "text");
     textScore.setAttribute("x", cx);
     textScore.setAttribute("y", cy + 15);
-    textScore.setAttribute("fill", "var(--text-bright)");
+    textScore.setAttribute("class", "pie-tooltip-score");
     textScore.setAttribute("font-size", "16px");
     textScore.setAttribute("font-weight", "bold");
     textScore.setAttribute("text-anchor", "middle");

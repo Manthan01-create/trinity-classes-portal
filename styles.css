@@ -2029,4 +2029,23 @@ body {
     }
 }
 
+/* Pie Chart Text Styles */
+.pie-legend-text {
+    fill: var(--text-bright);
+    font-family: var(--font-sans);
+}
 
+.pie-legend-score {
+    fill: var(--text-muted);
+    font-family: var(--font-sans);
+}
+
+.pie-tooltip-name {
+    fill: var(--text-muted);
+    font-family: var(--font-sans);
+}
+
+.pie-tooltip-score {
+    fill: var(--text-bright);
+    font-family: var(--font-sans);
+}
