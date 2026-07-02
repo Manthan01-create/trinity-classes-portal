@@ -62,13 +62,18 @@
 
             <!-- Student Database Search & List -->
             <div class="admin-search-box">
-                <div class="search-input-wrapper">
+                <div class="search-input-wrapper" style="margin-bottom: 12px;">
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="student-search" placeholder="Search student by name/ID...">
                 </div>
-                <button id="add-student-btn" class="icon-btn-action" title="Create New Student">
-                    <i class="fas fa-user-plus"></i> Add Student
-                </button>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="add-student-btn" class="action-btn" style="flex: 1; padding: 8px; font-size: 0.8rem; background: var(--color-primary-glow); border: 1px solid var(--border-color-glow); color: var(--color-primary); height: 36px; justify-content: center;">
+                        <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Add Student
+                    </button>
+                    <button id="manage-circulars-btn" class="action-btn" style="flex: 1; padding: 8px; font-size: 0.8rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: var(--warning); height: 36px; justify-content: center;">
+                        <i class="fas fa-bullhorn" style="margin-right: 6px;"></i> Circulars
+                    </button>
+                </div>
             </div>
 
             <div class="sidebar-section-title">Students Registry</div>
@@ -170,12 +175,13 @@
                             <!-- 2. Performance Tab -->
                             <div id="tab-performance" class="tab-panel">
                                 <div class="performance-editor-wrapper">
-                                    <div class="gpa-summary-box glass-panel">
+                                    <div class="gpa-summary-box glass-panel" style="display: flex; align-items: center; justify-content: flex-start; gap: 30px;">
                                         <div class="form-group" style="margin-bottom: 0;">
-                                            <label class="form-label">Overall GPA String</label>
-                                            <input type="text" id="edit-perf-gpa" class="form-input" placeholder="e.g. 3.85 / 4.0" style="font-size: 1.2rem; font-weight: bold; width: 200px;">
+                                            <label class="form-label">Calculated Average Score</label>
+                                            <input type="hidden" id="edit-perf-gpa" value="">
+                                            <span id="edit-perf-avg-label" style="font-size: 1.6rem; font-weight: 800; color: var(--color-primary); display: block; margin-top: 5px;">0%</span>
                                         </div>
-                                        <div class="form-group" style="margin-bottom: 0; margin-left: 20px;">
+                                        <div class="form-group" style="margin-bottom: 0;">
                                             <label class="form-label">Total Tests Completed</label>
                                             <input type="number" id="edit-perf-tests" class="form-input" style="font-size: 1.2rem; width: 120px;">
                                         </div>
@@ -236,6 +242,29 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Batch Attendance Entry Card -->
+                                    <div class="glass-panel" style="padding: 20px; border-radius: var(--border-radius-md); background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.1); margin-top: 25px;">
+                                        <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-users-slash" style="color: var(--danger);"></i> Quick Batch Attendance Registrar (June 2026)
+                                        </h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">
+                                            Specify a June calendar day number and list the absent students (by username or full name). All other registered students will automatically be marked present.
+                                        </p>
+                                        <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                                            <div class="form-group" style="margin-bottom: 0; width: 120px;">
+                                                <label class="form-label" style="font-size: 0.75rem;">June Day # (1-30)</label>
+                                                <input type="number" id="batch-attend-day" class="form-input" min="1" max="30" value="1" style="text-align: center;">
+                                            </div>
+                                            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 250px;">
+                                                <label class="form-label" style="font-size: 0.75rem;">Absent Student Names / Usernames (separated by commas)</label>
+                                                <input type="text" id="batch-attend-absentees" class="form-input" placeholder="e.g. alice, bob, Testing Student">
+                                            </div>
+                                            <button id="submit-batch-attend-btn" type="button" class="action-btn danger-btn-action" style="padding: 10px 20px; font-size: 0.85rem; height: 38px; width: auto; min-width: 140px;">
+                                                <i class="fas fa-users-slash" style="margin-right: 6px;"></i> Mark Attendance
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -244,15 +273,15 @@
                                 <div class="fees-editor-dashboard">
                                     <div class="fee-totals-row">
                                         <div class="form-group">
-                                            <label class="form-label">Total Fee Due ($)</label>
+                                            <label class="form-label">Total Fee Due (₹)</label>
                                             <input type="number" id="edit-fee-total" class="form-input" required>
                                         </div>
                                         <div class="form-group">
-                                            <label class="form-label">Amount Paid ($)</label>
+                                            <label class="form-label">Amount Paid (₹)</label>
                                             <input type="number" id="edit-fee-paid" class="form-input" required>
                                         </div>
                                         <div class="form-group">
-                                            <label class="form-label">Amount Pending ($)</label>
+                                            <label class="form-label">Amount Pending (₹)</label>
                                             <input type="number" id="edit-fee-pending" class="form-input" disabled style="opacity: 0.7;">
                                         </div>
                                         <div class="form-group">
@@ -274,15 +303,7 @@
                                         </button>
                                     </div>
 
-                                    <div class="fee-breakdown-section" style="margin-top: 30px;">
-                                        <h3 class="section-subtitle">Fee Breakdown Invoices</h3>
-                                        <div id="edit-breakdown-list" class="breakdown-editor-list">
-                                            <!-- Loaded Dynamically -->
-                                        </div>
-                                        <button id="add-breakdown-btn" class="icon-btn-action secondary-action" style="margin-top: 15px;">
-                                            <i class="fas fa-plus"></i> Add Invoice Item
-                                        </button>
-                                    </div>
+                                    <!-- Fee Breakdown Invoice editor removed -->
 
                                     <div class="fee-transactions-section" style="margin-top: 30px;">
                                         <h3 class="section-subtitle">Transaction Log</h3>
@@ -342,6 +363,53 @@
                         </div>
                     </div>
                     
+                </div>
+            </div>
+
+            <!-- Global Announcements / School Circulars Workspace -->
+            <div id="workspace-circulars" class="workspace-editor hidden" style="padding: 30px;">
+                <header class="workspace-header" style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                    <div class="header-student-profile">
+                        <div class="student-avatar-lg" style="background: rgba(245, 158, 11, 0.15); color: var(--warning); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-radius: 12px; width: 50px; height: 50px;">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <h1 style="font-size: 1.4rem; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">School Circulars & updates</h1>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Publish announcements and bulletins directly to the student portal home dashboard.</p>
+                        </div>
+                    </div>
+                </header>
+
+                <div style="display: grid; grid-template-columns: 1fr; gap: 30px;">
+                    <!-- Publish Circular Card -->
+                    <div class="glass-panel" style="padding: 24px; border-radius: var(--border-radius-lg); background: rgba(255, 255, 255, 0.02);">
+                        <h3 class="section-subtitle" style="margin-top: 0; margin-bottom: 15px; font-size: 1rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-edit" style="color: var(--color-primary);"></i> Write &amp; Publish New Bulletin
+                        </h3>
+                        <form id="circular-publish-form" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 0.75rem;">Circular Title</label>
+                                <input type="text" id="circular-title-input" class="form-input" placeholder="e.g. Science Laboratory Timetable Change" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="font-size: 0.75rem;">Content Details</label>
+                                <textarea id="circular-desc-input" class="form-input" placeholder="Type instructions or update notes here..." style="min-height: 110px; font-family: inherit; padding: 12px; resize: vertical;" required></textarea>
+                            </div>
+                            <button type="submit" class="action-btn success-btn-action" style="width: auto; align-self: flex-start; padding: 10px 24px;">
+                                <i class="fas fa-paper-plane" style="margin-right: 6px;"></i> Publish Circular
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Currently Active Circulars list -->
+                    <div style="margin-top: 10px;">
+                        <h3 class="section-subtitle" style="margin-bottom: 15px; font-size: 1rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-history" style="color: var(--warning);"></i> Active School Circulars List
+                        </h3>
+                        <div id="admin-circulars-list" style="display: flex; flex-direction: column; gap: 15px;">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
 

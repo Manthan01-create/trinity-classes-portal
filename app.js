@@ -204,7 +204,12 @@ function loadDashboardData() {
     document.getElementById("dash-student-grade").innerText = currentStudent.profile.grade;
     document.getElementById("dash-student-phone").innerText = currentStudent.profile.phone || "+1 (555) 000-0000";
     
-    document.getElementById("dash-gpa-val").innerText = currentStudent.performance.gpa;
+    // Calculate Average Score dynamically from active subjects
+    const subjects = currentStudent.performance.subjects || [];
+    const totalScore = subjects.reduce((sum, s) => sum + s.score, 0);
+    const avgScore = subjects.length > 0 ? Math.round(totalScore / subjects.length) : 0;
+    document.getElementById("dash-gpa-val").innerText = `${avgScore}%`;
+    
     document.getElementById("dash-attendance-rate").innerText = currentStudent.attendance.rate + "%";
     
     const attCircle = document.getElementById("dash-attendance-circle");
@@ -214,29 +219,36 @@ function loadDashboardData() {
     }
 
     const pendingVal = document.getElementById("dash-fees-pending");
-    pendingVal.innerText = `$${currentStudent.fees.pending}`;
+    pendingVal.innerText = `₹${currentStudent.fees.pending}`;
     if (currentStudent.fees.pending > 0) {
         pendingVal.className = "metric-value danger-text animate-pulse-subtle";
     } else {
         pendingVal.className = "metric-value success-text";
     }
 
-    const announcements = [
-        { title: "Quarterly Exam Schedule Out", desc: "Quarterly exams will commence from next Monday. Please download the schedule from the circular section.", date: "Today" },
-        { title: "Science Project Submission", desc: "Physics lab manual submission deadline is June 30th. Ensure all experimental logs are signed.", date: "Yesterday" }
-    ];
-    
-    const container = document.getElementById("dash-announcements");
-    container.innerHTML = announcements.map(item => `
-        <div class="announcement-item">
-            <div class="announcement-meta">
-                <span class="announcement-badge">Circular</span>
-                <span class="announcement-date">${item.date}</span>
-            </div>
-            <h4>${item.title}</h4>
-            <p>${item.desc}</p>
-        </div>
-    `).join("");
+    // Fetch dynamic bulletins from the server database
+    fetch(`${API_BASE}/announcements?_cb=${new Date().getTime()}`)
+        .then(res => res.json())
+        .then(announcements => {
+            const container = document.getElementById("dash-announcements");
+            if (announcements.length === 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted); font-style: italic;">No active circulars or announcements at this time.</div>`;
+                return;
+            }
+            container.innerHTML = announcements.map(item => `
+                <div class="announcement-item">
+                    <div class="announcement-meta">
+                        <span class="announcement-badge">Circular</span>
+                        <span class="announcement-date">${item.date}</span>
+                    </div>
+                    <h4>${item.title}</h4>
+                    <p>${item.desc}</p>
+                </div>
+            `).join("");
+        })
+        .catch(err => {
+            console.error("Unable to load school circulars", err);
+        });
 }
 
 // 2. Performance View
@@ -503,9 +515,9 @@ function loadFeesData() {
     if (!currentStudent) return;
 
     // Header metrics matching index.html IDs
-    document.getElementById("fee-total-bill").innerText = `$${currentStudent.fees.total}`;
-    document.getElementById("fee-total-paid").innerText = `$${currentStudent.fees.paid}`;
-    document.getElementById("fee-total-pending").innerText = `$${currentStudent.fees.pending}`;
+    document.getElementById("fee-total-bill").innerText = `₹${currentStudent.fees.total}`;
+    document.getElementById("fee-total-paid").innerText = `₹${currentStudent.fees.paid}`;
+    document.getElementById("fee-total-pending").innerText = `₹${currentStudent.fees.pending}`;
 
     // Scheme Selection Tab Styling & Pane Display
     const fullTabBtn = document.getElementById("scheme-tab-full");
@@ -523,7 +535,7 @@ function loadFeesData() {
             instPane.classList.add("hidden");
             
             // Populate full pay amount
-            document.getElementById("full-pay-amount-label").innerText = `$${currentStudent.fees.pending.toFixed(2)}`;
+            document.getElementById("full-pay-amount-label").innerText = `₹${currentStudent.fees.pending.toFixed(2)}`;
             
             const fullPayBtn = document.getElementById("full-pay-btn");
             if (currentStudent.fees.pending <= 0) {
@@ -566,7 +578,7 @@ function loadFeesData() {
             <tr>
                 <td><code>${txn.id}</code></td>
                 <td>${txn.date}</td>
-                <td>$${txn.amount}</td>
+                <td>₹${txn.amount}</td>
                 <td>${txn.method}</td>
                 <td><span class="status-badge paid">${txn.status}</span></td>
             </tr>
@@ -598,13 +610,13 @@ function renderInstallmentTimeline() {
             stepDiv.classList.add("completed");
             markerContent = '<i class="fas fa-check"></i>';
             statusText = '<span class="timeline-step-badge paid">Paid</span>';
-            detailsText = `Fully settled on schedule • $${inst.amount}`;
+            detailsText = `Fully settled on schedule • ₹${inst.amount}`;
         } else if (inst.status === "partial") {
             stepDiv.classList.add("active");
             markerContent = '<i class="fas fa-adjust"></i>';
             const remaining = inst.amount - (inst.paidAmount || 0);
-            statusText = `<span class="timeline-step-badge partial">Partial (Paid $${inst.paidAmount})</span>`;
-            detailsText = `Paid $${inst.paidAmount} of $${inst.amount} • Due ${inst.dueDate}`;
+            statusText = `<span class="timeline-step-badge partial">Partial (Paid ₹${inst.paidAmount})</span>`;
+            detailsText = `Paid ₹${inst.paidAmount} of ₹${inst.amount} • Due ${inst.dueDate}`;
             
             actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${remaining}" style="padding: 6px 12px; font-size: 0.8rem; width: auto;">Pay Due</button>`;
             firstUnpaidFound = true;
@@ -612,7 +624,7 @@ function renderInstallmentTimeline() {
             if (!firstUnpaidFound) {
                 stepDiv.classList.add("active");
                 markerContent = '<i class="fas fa-clock"></i>';
-                statusText = `<span class="timeline-step-badge locked" style="background: var(--color-primary-glow); color: var(--color-primary);">Active Due: $${inst.amount}</span>`;
+                statusText = `<span class="timeline-step-badge locked" style="background: var(--color-primary-glow); color: var(--color-primary);">Active Due: ₹${inst.amount}</span>`;
                 detailsText = `Due date: ${inst.dueDate}`;
                 
                 actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${inst.amount}" style="padding: 6px 12px; font-size: 0.8rem; width: auto;">Pay Now</button>`;
@@ -744,9 +756,9 @@ function triggerReceiptReceiptPopup(receipt) {
                 <div class="receipt-row"><span>Student Name:</span><strong>${receipt.student}</strong></div>
                 <div class="receipt-row"><span>Receipt ID:</span><code>${receipt.txnId}</code></div>
                 <div class="receipt-row"><span>Date:</span><strong>${receipt.date}</strong></div>
-                <div class="receipt-row"><span>Amount Paid:</span><strong class="success-text">$${receipt.amount.toFixed(2)}</strong></div>
+                <div class="receipt-row"><span>Amount Paid:</span><strong class="success-text">₹${receipt.amount.toFixed(2)}</strong></div>
                 <div class="receipt-row"><span>Payment Mode:</span><strong>${receipt.method}</strong></div>
-                <div class="receipt-row"><span>Remaining Dues:</span><strong>$${receipt.pending.toFixed(2)}</strong></div>
+                <div class="receipt-row"><span>Remaining Dues:</span><strong>₹${receipt.pending.toFixed(2)}</strong></div>
             </div>
             <div class="receipt-footer">
                 <button id="close-receipt-btn" class="action-btn">Close Receipt</button>

@@ -124,8 +124,8 @@
                     <div class="metric-card glass-panel">
                         <div class="metric-icon flex-center"><i class="fas fa-award"></i></div>
                         <div class="metric-details">
-                            <p>Cumulative GPA</p>
-                            <span id="dash-gpa-val" class="metric-value">0.00</span>
+                            <p>Average Score</p>
+                            <span id="dash-gpa-val" class="metric-value">0%</span>
                         </div>
                     </div>
                     
@@ -144,7 +144,7 @@
                         <div class="metric-icon flex-center"><i class="fas fa-hand-holding-usd"></i></div>
                         <div class="metric-details">
                             <p>Pending Dues</p>
-                            <span id="dash-fees-pending" class="metric-value">$0</span>
+                            <span id="dash-fees-pending" class="metric-value">₹0</span>
                         </div>
                     </div>
                 </div>
@@ -315,21 +315,21 @@
                         <div class="metric-icon flex-center"><i class="fas fa-calculator"></i></div>
                         <div class="metric-details">
                             <p>Total Assessment</p>
-                            <span id="fee-total-bill" class="metric-value">$0</span>
+                            <span id="fee-total-bill" class="metric-value">₹0</span>
                         </div>
                     </div>
                     <div class="metric-card glass-panel">
                         <div class="metric-icon flex-center" style="color: var(--success);"><i class="fas fa-wallet"></i></div>
                         <div class="metric-details">
                             <p>Total Paid Amount</p>
-                            <span id="fee-total-paid" class="metric-value">$0</span>
+                            <span id="fee-total-paid" class="metric-value">₹0</span>
                         </div>
                     </div>
                     <div class="metric-card glass-panel">
                         <div class="metric-icon flex-center"><i class="fas fa-file-invoice"></i></div>
                         <div class="metric-details">
                             <p>Outstanding Balances</p>
-                            <span id="fee-total-pending" class="metric-value">$0</span>
+                            <span id="fee-total-pending" class="metric-value">₹0</span>
                         </div>
                     </div>
                 </div>
@@ -354,7 +354,7 @@
                                 <div class="full-pay-box">
                                     <div class="amount-due-row">
                                         <span>Total Outstanding Dues:</span>
-                                        <strong id="full-pay-amount-label">$0.00</strong>
+                                        <strong id="full-pay-amount-label">₹0.00</strong>
                                     </div>
                                     <button id="full-pay-btn" class="action-btn" style="width: auto; padding: 12px 24px;">
                                         <i class="fas fa-shield-alt"></i> Pay Full Balance
@@ -407,7 +407,7 @@
             </div>
             <form id="checkout-form">
                 <div class="form-group">
-                    <label for="pay-amount" class="form-label">Payment Amount ($)</label>
+                    <label for="pay-amount" class="form-label">Payment Amount (₹)</label>
                     <input type="number" id="pay-amount" class="form-input" min="1" step="any" required>
                 </div>
                 <div class="form-group">

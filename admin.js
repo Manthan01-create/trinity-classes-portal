@@ -19,6 +19,8 @@ function initAdminApp() {
     setupTabListeners();
     setupSearchListener();
     setupStudentModal();
+    setupAdminCirculars();
+    setupBatchAttendance();
     checkActiveSession();
 }
 
@@ -137,7 +139,7 @@ function renderStudentList() {
                 <div class="student-item-meta">${student.grade} • ID: ${student.id}</div>
             </div>
             <div class="student-item-badge ${student.feesPending > 0 ? 'fees-pending' : 'fees-paid'}">
-                ${student.feesPending > 0 ? `$${student.feesPending}` : 'Paid'}
+                ${student.feesPending > 0 ? `₹${student.feesPending}` : 'Paid'}
             </div>
         `;
 
@@ -234,7 +236,12 @@ function renderStudentEditor() {
     document.getElementById("edit-profile-avatar").value = selectedStudent.profile.avatar || "";
 
     // Performance Tab Inputs
-    document.getElementById("edit-perf-gpa").value = selectedStudent.performance.gpa || "0.00 / 4.0";
+    const subjects = selectedStudent.performance.subjects || [];
+    const totalScore = subjects.reduce((sum, s) => sum + s.score, 0);
+    const avgScore = subjects.length > 0 ? Math.round(totalScore / subjects.length) : 0;
+    
+    document.getElementById("edit-perf-gpa").value = avgScore + "%";
+    document.getElementById("edit-perf-avg-label").innerText = avgScore + "%";
     document.getElementById("edit-perf-tests").value = selectedStudent.performance.totalTests || 0;
     renderSubjectsList();
 
@@ -274,6 +281,8 @@ function renderSubjectsList() {
 
     if (subjects.length === 0) {
         container.innerHTML = `<div style="color: var(--text-muted); font-style: italic;">No subjects registered.</div>`;
+        document.getElementById("edit-perf-gpa").value = "0%";
+        document.getElementById("edit-perf-avg-label").innerText = "0%";
         return;
     }
 
@@ -290,6 +299,28 @@ function renderSubjectsList() {
         `;
         container.appendChild(item);
     });
+
+    const updateAverageScore = () => {
+        const rows = container.querySelectorAll(".subject-editor-row");
+        let total = 0;
+        let count = 0;
+        rows.forEach(row => {
+            const val = parseInt(row.querySelector(".subj-score").value) || 0;
+            total += val;
+            count++;
+        });
+        const avg = count > 0 ? Math.round(total / count) : 0;
+        document.getElementById("edit-perf-gpa").value = avg + "%";
+        document.getElementById("edit-perf-avg-label").innerText = avg + "%";
+    };
+
+    // Attach listener to calculate average reactively
+    container.querySelectorAll(".subj-score").forEach(input => {
+        input.addEventListener("input", updateAverageScore);
+    });
+
+    // Run once initially
+    updateAverageScore();
 
     // Subject Delete Handler
     container.querySelectorAll(".delete-subj-row-btn").forEach(btn => {
@@ -422,7 +453,7 @@ function renderInstallmentsList() {
         row.className = "installment-editor-row";
         row.innerHTML = `
             <input type="text" class="form-input inst-title" value="${inst.title}" placeholder="Label (e.g. 1st installment)" style="flex: 2;">
-            <input type="number" class="form-input inst-amount" value="${inst.amount}" placeholder="Amount $" style="width: 100px;">
+            <input type="number" class="form-input inst-amount" value="${inst.amount}" placeholder="Amount ₹" style="width: 100px;">
             <input type="text" class="form-input inst-date" value="${inst.dueDate || ''}" placeholder="Due Date (YYYY-MM-DD)" style="width: 140px;">
             <select class="form-input inst-status" style="width: 120px;">
                 <option value="pending" ${inst.status === 'pending'?'selected':''}>Pending</option>
@@ -478,7 +509,7 @@ function renderTransactionsTable() {
         row.innerHTML = `
             <td><strong>${txn.id}</strong></td>
             <td>${txn.date}</td>
-            <td><span class="text-success">$${txn.amount}</span></td>
+            <td><span class="text-success">₹${txn.amount}</span></td>
             <td>${txn.method}</td>
             <td><span class="status-badge paid">${txn.status}</span></td>
             <td>
@@ -709,4 +740,199 @@ function showToast(title, message, type = 'info') {
         toast.style.transform = "translateY(-10px)";
         setTimeout(() => toast.remove(), 400);
     }, 4000);
+}
+
+// ---------------- GLOBAL CIRCULARS & BATCH ATTENDANCE OPERATIONS ----------------
+
+let activeCirculars = [];
+
+function setupAdminCirculars() {
+    const manageBtn = document.getElementById("manage-circulars-btn");
+    const publishForm = document.getElementById("circular-publish-form");
+
+    if (manageBtn) {
+        manageBtn.addEventListener("click", () => {
+            // Unselect any selected student in the list
+            selectedStudent = null;
+            document.querySelectorAll(".student-list-item").forEach(item => {
+                item.classList.remove("active");
+            });
+
+            // Toggle workspaces visibility
+            document.getElementById("workspace-placeholder").classList.add("hidden");
+            document.getElementById("workspace-editor").classList.add("hidden");
+            document.getElementById("workspace-circulars").classList.remove("hidden");
+
+            // Load and display circulars
+            loadAdminCirculars();
+        });
+    }
+
+    if (publishForm) {
+        publishForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const titleInput = document.getElementById("circular-title-input");
+            const descInput = document.getElementById("circular-desc-input");
+
+            const newCircular = {
+                id: Date.now(),
+                title: titleInput.value.trim(),
+                desc: descInput.value.trim(),
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            const updatedList = [newCircular, ...activeCirculars];
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/announcements`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ announcements: updatedList })
+                });
+
+                if (res.ok) {
+                    showToast("Circular Published", "The announcement was successfully broadcasted.", "success");
+                    titleInput.value = "";
+                    descInput.value = "";
+                    activeCirculars = updatedList;
+                    renderAdminCirculars();
+                } else {
+                    showToast("Publish Error", "Server rejected updated announcements payload.", "error");
+                }
+            } catch (err) {
+                showToast("Connection Offline", "Failed to sync announcement with database.", "error");
+            }
+        });
+    }
+}
+
+async function loadAdminCirculars() {
+    const container = document.getElementById("admin-circulars-list");
+    container.innerHTML = `<div style="color: var(--text-muted); font-style: italic;"><i class="fas fa-spinner fa-spin"></i> Syncing bulletins...</div>`;
+
+    try {
+        const res = await fetch(`${API_BASE}/announcements?_cb=${new Date().getTime()}`);
+        if (res.ok) {
+            activeCirculars = await res.json();
+            renderAdminCirculars();
+        } else {
+            container.innerHTML = `<div style="color: var(--danger);">Failed to retrieve circulars from database.</div>`;
+        }
+    } catch (err) {
+        container.innerHTML = `<div style="color: var(--danger);">Connection error when sync with database.</div>`;
+    }
+}
+
+function renderAdminCirculars() {
+    const container = document.getElementById("admin-circulars-list");
+    container.innerHTML = "";
+
+    if (activeCirculars.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted); font-style: italic; padding: 10px;">No circulars are currently active on the home dashboard.</div>`;
+        return;
+    }
+
+    activeCirculars.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "announcement-item glass-panel";
+        card.style.background = "rgba(255,255,255,0.01)";
+        card.style.padding = "15px";
+        card.style.borderRadius = "var(--border-radius-md)";
+        card.style.border = "1px solid var(--border-color)";
+        card.style.position = "relative";
+        
+        card.innerHTML = `
+            <div class="announcement-meta" style="margin-bottom: 8px;">
+                <span class="announcement-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">Circular</span>
+                <span class="announcement-date">${c.date}</span>
+            </div>
+            <h4 style="font-weight: 700; color: var(--text-bright); margin-bottom: 5px; font-size: 0.95rem;">${c.title}</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0;">${c.desc}</p>
+            <button class="delete-circular-btn" data-id="${c.id}" title="Remove Circular" style="position: absolute; top: 12px; right: 12px; border: none; background: transparent; color: var(--text-muted); cursor: pointer; transition: var(--transition-smooth); font-size: 0.85rem;">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+
+        // Bind delete action
+        card.querySelector(".delete-circular-btn").addEventListener("click", async (e) => {
+            const cid = parseInt(e.currentTarget.dataset.id);
+            const filteredList = activeCirculars.filter(item => item.id !== cid);
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/announcements`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ announcements: filteredList })
+                });
+
+                if (res.ok) {
+                    showToast("Circular Deleted", "Announcement removed from database.", "success");
+                    activeCirculars = filteredList;
+                    renderAdminCirculars();
+                } else {
+                    showToast("Sync Error", "Server failed to save updated announcements list.", "error");
+                }
+            } catch (err) {
+                showToast("Connection Error", "Network offline. Deletion cancelled.", "error");
+            }
+        });
+
+        container.appendChild(card);
+    });
+}
+
+function setupBatchAttendance() {
+    const batchBtn = document.getElementById("submit-batch-attend-btn");
+    if (!batchBtn) return;
+
+    batchBtn.addEventListener("click", async () => {
+        const dayInput = document.getElementById("batch-attend-day");
+        const listInput = document.getElementById("batch-attend-absentees");
+
+        const dayVal = parseInt(dayInput.value);
+        if (isNaN(dayVal) || dayVal < 1 || dayVal > 30) {
+            showToast("Invalid Input", "Please enter a valid day number for June 2026 (1-30).", "error");
+            return;
+        }
+
+        const absentees = listInput.value.split(",")
+            .map(x => x.trim())
+            .filter(x => x.length > 0);
+
+        batchBtn.disabled = true;
+        const origText = batchBtn.innerHTML;
+        batchBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Syncing...`;
+
+        try {
+            const res = await fetch(`${API_BASE}/admin/batch-attendance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ day: dayVal, absentees })
+            });
+
+            if (res.ok) {
+                showToast("Batch Registered", `Attendance marked for Day ${dayVal}. Absentees: ${absentees.length}`, "success");
+                listInput.value = "";
+                
+                // Refresh local database caches
+                await loadStudentsRegistry();
+                
+                // If a student is currently open, refresh their editor workspace to show updated calendar grid
+                if (selectedStudent) {
+                    // Update state to match new database values
+                    const fresh = studentsList.find(s => s.username === selectedStudent.username);
+                    if (fresh) {
+                        selectStudent(fresh.username);
+                    }
+                }
+            } else {
+                showToast("Update Error", "Server rejected batch registration request.", "error");
+            }
+        } catch (err) {
+            showToast("Offline Error", "Server unreachable. Attendance sync failed.", "error");
+        } finally {
+            batchBtn.disabled = false;
+            batchBtn.innerHTML = origText;
+        }
+    });
 }
