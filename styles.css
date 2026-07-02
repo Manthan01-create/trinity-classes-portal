@@ -2031,21 +2031,38 @@ body {
 
 /* Pie Chart Text Styles */
 .pie-legend-text {
-    fill: var(--text-bright);
+    fill: #ffffff;
     font-family: var(--font-sans);
 }
 
 .pie-legend-score {
-    fill: var(--text-muted);
+    fill: #9CA3AF;
     font-family: var(--font-sans);
 }
 
 .pie-tooltip-name {
-    fill: var(--text-muted);
+    fill: #9CA3AF;
     font-family: var(--font-sans);
 }
 
 .pie-tooltip-score {
-    fill: var(--text-bright);
+    fill: #ffffff;
     font-family: var(--font-sans);
+}
+
+/* Light Mode Overrides */
+body.light-mode .pie-legend-text {
+    fill: #1f2937;
+}
+
+body.light-mode .pie-legend-score {
+    fill: #6b7280;
+}
+
+body.light-mode .pie-tooltip-name {
+    fill: #6b7280;
+}
+
+body.light-mode .pie-tooltip-score {
+    fill: #1f2937;
 }
