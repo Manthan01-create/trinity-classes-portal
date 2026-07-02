@@ -1,0 +1,15 @@
+{
+  "name": "trinity-classes-portal",
+  "version": "1.0.0",
+  "description": "Student Portal & Admin Dashboard Backend for Trinity Classes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "author": "Trinity Classes",
+  "license": "ISC"
+}
