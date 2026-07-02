@@ -97,7 +97,6 @@ function setupAuthListeners() {
             const data = await res.json();
             if (res.ok) {
                 errorDiv.innerText = "";
-                // Load details and log in
                 const loaded = await loadStudentData(usernameInput);
                 if (loaded) {
                     loginStudent(usernameInput);
@@ -106,7 +105,6 @@ function setupAuthListeners() {
                 }
             } else {
                 errorDiv.innerText = data.error || "Invalid username or password.";
-                // Trigger shake animation on form
                 const formCard = document.querySelector(".login-card");
                 formCard.classList.add("shake-animation");
                 setTimeout(() => {
@@ -118,7 +116,6 @@ function setupAuthListeners() {
         }
     });
 
-    // Preset button helper to make it easy for evaluator
     document.querySelectorAll(".preset-user-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             document.getElementById("login-username").value = btn.dataset.user;
@@ -137,7 +134,6 @@ function setupNavigation() {
             if (view === "logout") {
                 logoutStudent();
             } else {
-                // Fetch fresh updates on each view change
                 if (currentStudent) {
                     await loadStudentData(currentStudent.username);
                 }
@@ -148,7 +144,6 @@ function setupNavigation() {
 }
 
 function navigateTo(viewId) {
-    // Update Sidebar active state
     document.querySelectorAll(".sidebar-nav-link").forEach(link => {
         if (link.dataset.view === viewId) {
             link.classList.add("active");
@@ -157,7 +152,6 @@ function navigateTo(viewId) {
         }
     });
 
-    // Hide all views, display the chosen view
     document.querySelectorAll(".app-view").forEach(view => {
         view.classList.add("hidden");
     });
@@ -165,7 +159,6 @@ function navigateTo(viewId) {
     const activeView = document.getElementById(`view-${viewId}`);
     if (activeView) {
         activeView.classList.remove("hidden");
-        // Fade in animation trigger
         activeView.style.opacity = 0;
         setTimeout(() => {
             activeView.style.opacity = 1;
@@ -173,7 +166,6 @@ function navigateTo(viewId) {
         }, 50);
     }
 
-    // Populate data specifically for the chosen view
     switch (viewId) {
         case "dashboard":
             loadDashboardData();
@@ -200,31 +192,25 @@ function setupThemeToggle() {
     });
 }
 
-// View-Specific Data Hydration
-
 // 1. Dashboard View
 function loadDashboardData() {
     if (!currentStudent) return;
     
-    // Profile section
     document.getElementById("dash-welcome-name").innerText = currentStudent.profile.name;
     document.getElementById("dash-student-id").innerText = currentStudent.profile.id;
     document.getElementById("dash-student-email").innerText = currentStudent.profile.email;
     document.getElementById("dash-student-grade").innerText = currentStudent.profile.grade;
     document.getElementById("dash-student-phone").innerText = currentStudent.profile.phone || "+1 (555) 000-0000";
     
-    // Quick Metrics
     document.getElementById("dash-gpa-val").innerText = currentStudent.performance.gpa;
     document.getElementById("dash-attendance-rate").innerText = currentStudent.attendance.rate + "%";
     
-    // Render mini attendance progress circle
     const attCircle = document.getElementById("dash-attendance-circle");
     if (attCircle) {
         const offset = 188.4 - (188.4 * currentStudent.attendance.rate) / 100;
         attCircle.style.strokeDashoffset = offset;
     }
 
-    // Pending fee status summary
     const pendingVal = document.getElementById("dash-fees-pending");
     pendingVal.innerText = `$${currentStudent.fees.pending}`;
     if (currentStudent.fees.pending > 0) {
@@ -233,7 +219,6 @@ function loadDashboardData() {
         pendingVal.className = "metric-value success-text";
     }
 
-    // Populate announcements
     const announcements = [
         { title: "Quarterly Exam Schedule Out", desc: "Quarterly exams will commence from next Monday. Please download the schedule from the circular section.", date: "Today" },
         { title: "Science Project Submission", desc: "Physics lab manual submission deadline is June 30th. Ensure all experimental logs are signed.", date: "Yesterday" }
@@ -256,11 +241,6 @@ function loadDashboardData() {
 function loadPerformanceData() {
     if (!currentStudent) return;
 
-    // Set Header Info
-    document.getElementById("perf-student-id").innerText = currentStudent.profile.id;
-    document.getElementById("perf-student-grade").innerText = currentStudent.profile.grade;
-
-    // Subjects list with detailed metrics and dynamic grading
     const subjectsContainer = document.getElementById("perf-subjects-list");
     subjectsContainer.innerHTML = currentStudent.performance.subjects.map(sub => {
         let grade = "F";
@@ -286,7 +266,6 @@ function loadPerformanceData() {
         `;
     }).join("");
 
-    // Animate progress bars on load
     setTimeout(() => {
         const fills = document.querySelectorAll(".progress-bar-fill");
         fills.forEach(fill => {
@@ -294,7 +273,6 @@ function loadPerformanceData() {
         });
     }, 100);
 
-    // Render Performance Trend SVG Chart
     renderPerformanceChart(currentStudent.performance.history);
 }
 
@@ -305,14 +283,13 @@ function renderPerformanceChart(history) {
     svg.innerHTML = "";
 
     if (!history || history.length === 0) {
-        svg.innerHTML = `<text x="250" y="150" fill="var(--text-muted)" text-anchor="middle">No history data available.</text>`;
+        svg.innerHTML = `<text x="250" y="125" fill="var(--text-muted)" text-anchor="middle">No history data available.</text>`;
         return;
     }
 
-    // Grid coordinates
     const width = 560;
-    const height = 280;
-    const padding = 45;
+    const height = 210; // Matches index.html viewBox height 250 with margins
+    const padding = 40;
 
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
@@ -320,12 +297,10 @@ function renderPerformanceChart(history) {
     const maxVal = 100;
     const minVal = 0;
 
-    // Draw horizontal grid lines & labels
     for (let i = 0; i <= 4; i++) {
         const yVal = minVal + ((maxVal - minVal) * i) / 4;
         const yPos = padding + chartHeight - (chartHeight * i) / 4;
 
-        // Line
         const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         gridLine.setAttribute("x1", padding);
         gridLine.setAttribute("y1", yPos);
@@ -335,18 +310,16 @@ function renderPerformanceChart(history) {
         gridLine.setAttribute("stroke-width", "1");
         svg.appendChild(gridLine);
 
-        // Label
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", padding - 12);
+        text.setAttribute("x", padding - 10);
         text.setAttribute("y", yPos + 4);
         text.setAttribute("fill", "var(--text-muted)");
-        text.setAttribute("font-size", "11px");
+        text.setAttribute("font-size", "10px");
         text.setAttribute("text-anchor", "end");
         text.textContent = yVal + "%";
         svg.appendChild(text);
     }
 
-    // Coordinates mapping helper
     const getCoords = (index, score) => {
         const x = padding + (chartWidth * index) / (history.length - 1);
         const y = padding + chartHeight - (chartHeight * (score - minVal)) / (maxVal - minVal);
@@ -356,7 +329,6 @@ function renderPerformanceChart(history) {
     let pathD = "";
     const points = [];
 
-    // Map month tags and values
     history.forEach((data, index) => {
         const coords = getCoords(index, data.score);
         points.push(coords);
@@ -367,28 +339,24 @@ function renderPerformanceChart(history) {
             pathD += ` L ${coords.x} ${coords.y}`;
         }
 
-        // Draw x-axis tags
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("x", coords.x);
-        label.setAttribute("y", height - padding + 22);
+        label.setAttribute("y", height - padding + 18);
         label.setAttribute("fill", "var(--text-muted)");
-        label.setAttribute("font-size", "11px");
+        label.setAttribute("font-size", "10px");
         label.setAttribute("text-anchor", "middle");
         label.textContent = data.month;
         svg.appendChild(label);
     });
 
-    // Render area path
     if (points.length > 0) {
         const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
         const areaPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
         areaPath.setAttribute("d", areaD);
-        areaPath.setAttribute("fill", "url(#chart-glow-gradient)");
-        areaPath.setAttribute("style", "opacity: 0.15;");
+        areaPath.setAttribute("fill", "url(#areaGradient)");
         svg.appendChild(areaPath);
     }
 
-    // Render line path
     const linePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
     linePath.setAttribute("d", pathD);
     linePath.setAttribute("fill", "none");
@@ -398,23 +366,21 @@ function renderPerformanceChart(history) {
     linePath.setAttribute("stroke-linejoin", "round");
     svg.appendChild(linePath);
 
-    // Draw circular node points
     points.forEach((pt, index) => {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute("cx", pt.x);
         circle.setAttribute("cy", pt.y);
-        circle.setAttribute("r", "5");
+        circle.setAttribute("r", "4");
         circle.setAttribute("fill", "var(--color-primary)");
         circle.setAttribute("stroke", "var(--bg-base)");
         circle.setAttribute("stroke-width", "2");
 
-        // Tooltip hover effect
         circle.addEventListener("mouseenter", () => {
-            circle.setAttribute("r", "7");
+            circle.setAttribute("r", "6");
             showChartTooltip(svg, pt.x, pt.y, history[index].score + "%");
         });
         circle.addEventListener("mouseleave", () => {
-            circle.setAttribute("r", "5");
+            circle.setAttribute("r", "4");
             removeChartTooltip();
         });
 
@@ -429,11 +395,11 @@ function showChartTooltip(svg, x, y, value) {
     container.setAttribute("id", "chart-tooltip");
 
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", x - 28);
-    rect.setAttribute("y", y - 32);
-    rect.setAttribute("width", "56");
-    rect.setAttribute("height", "22");
-    rect.setAttribute("rx", "4");
+    rect.setAttribute("x", x - 25);
+    rect.setAttribute("y", y - 30);
+    rect.setAttribute("width", "50");
+    rect.setAttribute("height", "20");
+    rect.setAttribute("rx", "3");
     rect.setAttribute("fill", "#111827");
     rect.setAttribute("stroke", "var(--border-color-glow)");
     rect.setAttribute("stroke-width", "1");
@@ -441,7 +407,7 @@ function showChartTooltip(svg, x, y, value) {
 
     const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
     txt.setAttribute("x", x);
-    txt.setAttribute("y", y - 17);
+    txt.setAttribute("y", y - 16);
     txt.setAttribute("fill", "var(--text-bright)");
     txt.setAttribute("font-size", "10px");
     txt.setAttribute("font-weight", "bold");
@@ -461,21 +427,20 @@ function removeChartTooltip() {
 function loadAttendanceData() {
     if (!currentStudent) return;
 
-    // Header stats info
-    document.getElementById("attend-present-count").innerText = currentStudent.attendance.present;
-    document.getElementById("attend-absent-count").innerText = currentStudent.attendance.absent;
-    document.getElementById("attend-late-count").innerText = currentStudent.attendance.late;
-    document.getElementById("attend-percentage-rate").innerText = currentStudent.attendance.rate + "%";
+    // Header stats info matching index.html IDs
+    document.getElementById("att-present-count").innerText = currentStudent.attendance.present;
+    document.getElementById("att-absent-count").innerText = currentStudent.attendance.absent;
+    document.getElementById("att-late-count").innerText = currentStudent.attendance.late;
+    document.getElementById("att-percentage-val").innerText = currentStudent.attendance.rate + "%";
 
-    // Progress circle
-    const circle = document.getElementById("attend-percentage-circle");
-    if (circle) {
-        const offset = 251.2 - (251.2 * currentStudent.attendance.rate) / 100;
-        circle.style.strokeDashoffset = offset;
+    // Progress bar gauge width matching index.html ID
+    const gauge = document.getElementById("att-progress-bar-gauge");
+    if (gauge) {
+        gauge.style.width = currentStudent.attendance.rate + "%";
     }
 
     // Generate Calendar Days (June 2026 starts on Monday (1st), 30 days)
-    const grid = document.getElementById("calendar-days-grid");
+    const grid = document.getElementById("calendar-days");
     grid.innerHTML = "";
 
     const totalDays = 30;
@@ -483,16 +448,27 @@ function loadAttendanceData() {
 
     for (let day = 1; day <= totalDays; day++) {
         const cell = document.createElement("div");
-        cell.className = "calendar-day-cell";
+        cell.className = "calendar-day";
         
         const status = history[day] || "";
         if (status) {
             cell.classList.add(status);
         }
 
+        const isWeekend = (day % 7 === 6 || day % 7 === 0);
+        if (isWeekend) {
+            cell.classList.add("weekend");
+        }
+
+        let badgeHtml = "";
+        if (status === "present") badgeHtml = '<span class="day-badge present-badge">Present</span>';
+        else if (status === "absent") badgeHtml = '<span class="day-badge absent-badge">Absent</span>';
+        else if (status === "late") badgeHtml = '<span class="day-badge late-badge">Late</span>';
+        else if (isWeekend) badgeHtml = '<span class="day-badge weekend-badge">Weekend</span>';
+
         cell.innerHTML = `
-            <span class="day-number">${day}</span>
-            <div class="day-status-indicator"></div>
+            <span class="date-number">${day}</span>
+            ${badgeHtml}
         `;
         grid.appendChild(cell);
     }
@@ -504,20 +480,103 @@ let paymentContext = { amount: 0, type: "full", installmentId: null };
 function loadFeesData() {
     if (!currentStudent) return;
 
-    // Header cards
-    document.getElementById("fees-due-amount").innerText = `$${currentStudent.fees.pending}`;
-    document.getElementById("fees-paid-amount").innerText = `$${currentStudent.fees.paid}`;
-    
-    // Quick overall status layout
-    const feeStatusDiv = document.getElementById("fees-status-summary");
-    if (currentStudent.fees.pending === 0) {
-        feeStatusDiv.innerHTML = '<span class="status-badge paid"><i class="fas fa-check-circle"></i> Account Clear</span>';
+    // Header metrics matching index.html IDs
+    document.getElementById("fee-total-bill").innerText = `$${currentStudent.fees.total}`;
+    document.getElementById("fee-total-paid").innerText = `$${currentStudent.fees.paid}`;
+    document.getElementById("fee-total-pending").innerText = `$${currentStudent.fees.pending}`;
+
+    // Scheme Selection Tab Styling & Pane Display
+    const fullTabBtn = document.getElementById("scheme-tab-full");
+    const instTabBtn = document.getElementById("scheme-tab-installments");
+    const fullPane = document.getElementById("scheme-content-full");
+    const instPane = document.getElementById("scheme-content-installments");
+
+    const activeScheme = currentStudent.fees.activeScheme || "full";
+
+    const setSchemeView = (scheme) => {
+        if (scheme === "full") {
+            fullTabBtn.classList.add("active");
+            instTabBtn.classList.remove("active");
+            fullPane.classList.remove("hidden");
+            instPane.classList.add("hidden");
+            
+            // Populate full pay amount
+            document.getElementById("full-pay-amount-label").innerText = `$${currentStudent.fees.pending.toFixed(2)}`;
+            
+            const fullPayBtn = document.getElementById("full-pay-btn");
+            if (currentStudent.fees.pending <= 0) {
+                fullPayBtn.disabled = true;
+                fullPayBtn.innerText = "Dues Fully Cleared";
+                fullPayBtn.style.opacity = 0.5;
+                fullPayBtn.style.cursor = "not-allowed";
+            } else {
+                fullPayBtn.disabled = false;
+                fullPayBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Pay Full Balance';
+                fullPayBtn.style.opacity = 1;
+                fullPayBtn.style.cursor = "pointer";
+                fullPayBtn.onclick = () => {
+                    openPaymentCheckout(currentStudent.fees.pending, "full");
+                };
+            }
+        } else {
+            fullTabBtn.classList.remove("active");
+            instTabBtn.classList.add("active");
+            fullPane.classList.add("hidden");
+            instPane.classList.remove("hidden");
+            
+            renderInstallmentTimeline();
+        }
+    };
+
+    // Initialize Scheme Selection View
+    setSchemeView(activeScheme);
+
+    // Bind Scheme selection tabs click events
+    fullTabBtn.onclick = () => setSchemeView("full");
+    instTabBtn.onclick = () => setSchemeView("installments");
+
+    // Hydrate invoice breakdown items matching index.html tbody
+    const breakdownTbody = document.getElementById("fees-breakdown-tbody");
+    breakdownTbody.innerHTML = currentStudent.fees.breakdown.map(item => {
+        let statusBadge = "";
+        if (item.status === "paid") {
+            statusBadge = '<span class="status-badge paid">Paid</span>';
+        } else if (item.status === "pending") {
+            statusBadge = '<span class="status-badge unpaid">Unpaid</span>';
+        } else {
+            statusBadge = `<span class="status-badge partial">Partial (Paid $${item.paidAmount})</span>`;
+        }
+
+        return `
+            <tr>
+                <td>${item.item}</td>
+                <td>$${item.amount}</td>
+                <td>${statusBadge}</td>
+            </tr>
+        `;
+    }).join("");
+
+    // Hydrate transaction logs matching index.html tbody
+    const transTbody = document.getElementById("transactions-tbody");
+    if (currentStudent.fees.transactions && currentStudent.fees.transactions.length > 0) {
+        transTbody.innerHTML = currentStudent.fees.transactions.map(txn => `
+            <tr>
+                <td><code>${txn.id}</code></td>
+                <td>${txn.date}</td>
+                <td>$${txn.amount}</td>
+                <td>${txn.method}</td>
+                <td><span class="status-badge paid">${txn.status}</span></td>
+            </tr>
+        `).join("");
     } else {
-        feeStatusDiv.innerHTML = '<span class="status-badge unpaid"><i class="fas fa-exclamation-circle"></i> Pending Dues</span>';
+        transTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 15px;">No transactions logged</td></tr>`;
     }
 
-    // Hydrate Installment Timeline Step UI
-    const timelineContainer = document.getElementById("fees-timeline-container");
+    setupCheckoutPortal();
+}
+
+function renderInstallmentTimeline() {
+    const timelineContainer = document.getElementById("installments-timeline-list");
     timelineContainer.innerHTML = "";
 
     const installments = currentStudent.fees.installments || [];
@@ -535,7 +594,7 @@ function loadFeesData() {
         if (inst.status === "paid") {
             stepDiv.classList.add("completed");
             markerContent = '<i class="fas fa-check"></i>';
-            statusText = '<span class="timeline-step-badge completed">Paid</span>';
+            statusText = '<span class="timeline-step-badge paid">Paid</span>';
             detailsText = `Fully settled on schedule • $${inst.amount}`;
         } else if (inst.status === "partial") {
             stepDiv.classList.add("active");
@@ -544,17 +603,16 @@ function loadFeesData() {
             statusText = `<span class="timeline-step-badge partial">Partial (Paid $${inst.paidAmount})</span>`;
             detailsText = `Paid $${inst.paidAmount} of $${inst.amount} • Due ${inst.dueDate}`;
             
-            actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${remaining}">Pay Due</button>`;
+            actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${remaining}" style="padding: 6px 12px; font-size: 0.8rem; width: auto;">Pay Due</button>`;
             firstUnpaidFound = true;
         } else {
-            // Status is pending
             if (!firstUnpaidFound) {
                 stepDiv.classList.add("active");
                 markerContent = '<i class="fas fa-clock"></i>';
                 statusText = `<span class="timeline-step-badge locked" style="background: var(--color-primary-glow); color: var(--color-primary);">Active Due: $${inst.amount}</span>`;
                 detailsText = `Due date: ${inst.dueDate}`;
                 
-                actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${inst.amount}">Pay Now</button>`;
+                actionHtml = `<button class="action-btn pay-inst-btn" data-id="${inst.id}" data-due="${inst.amount}" style="padding: 6px 12px; font-size: 0.8rem; width: auto;">Pay Now</button>`;
                 firstUnpaidFound = true;
             } else {
                 stepDiv.classList.add("locked");
@@ -578,7 +636,6 @@ function loadFeesData() {
         timelineContainer.appendChild(stepDiv);
     });
 
-    // Wire up pay installment buttons
     document.querySelectorAll(".pay-inst-btn").forEach(btn => {
         btn.onclick = () => {
             const instId = parseInt(btn.dataset.id);
@@ -586,54 +643,17 @@ function loadFeesData() {
             openPaymentCheckout(dueVal, "installment", instId);
         };
     });
-
-    // Hydrate detailed breakdown invoice items
-    const breakdownTbody = document.getElementById("fees-breakdown-tbody");
-    breakdownTbody.innerHTML = currentStudent.fees.breakdown.map(item => {
-        let statusBadge = "";
-        if (item.status === "paid") {
-            statusBadge = '<span class="status-badge paid">Paid</span>';
-        } else if (item.status === "pending") {
-            statusBadge = '<span class="status-badge unpaid">Unpaid</span>';
-        } else {
-            statusBadge = `<span class="status-badge partial">Partial (Paid $${item.paidAmount})</span>`;
-        }
-
-        return `
-            <tr>
-                <td>${item.item}</td>
-                <td>$${item.amount}</td>
-                <td>${statusBadge}</td>
-            </tr>
-        `;
-    }).join("");
-
-    // Hydrate transaction logs
-    const transTbody = document.getElementById("transactions-tbody");
-    transTbody.innerHTML = currentStudent.fees.transactions.map(txn => `
-        <tr>
-            <td><code>${txn.id}</code></td>
-            <td>${txn.date}</td>
-            <td>$${txn.amount}</td>
-            <td>${txn.method}</td>
-            <td><span class="status-badge paid">${txn.status}</span></td>
-        </tr>
-    `).join("");
-
-    // Setup checkout modal events
-    setupCheckoutPortal();
 }
 
 function openPaymentCheckout(amount, type = "full", installmentId = null) {
     paymentContext = { amount, type, installmentId };
     
-    // Display modal
     const modal = document.getElementById("checkout-modal");
     modal.classList.add("active");
     
-    document.getElementById("checkout-due-amount").innerText = `$${amount.toFixed(2)}`;
-    document.getElementById("pay-amount").value = amount;
-    document.getElementById("pay-amount").max = amount;
+    const amountInput = document.getElementById("pay-amount");
+    amountInput.value = amount;
+    amountInput.max = amount;
 }
 
 function setupCheckoutPortal() {
@@ -660,7 +680,6 @@ function setupCheckoutPortal() {
             return;
         }
 
-        // Processing payment button spinner
         const payBtn = form.querySelector('button[type="submit"]');
         const origText = payBtn.innerHTML;
         payBtn.disabled = true;
@@ -680,20 +699,13 @@ function setupCheckoutPortal() {
             const data = await res.json();
             
             if (res.ok) {
-                // Update local storage record
                 currentStudent.fees = data.fees;
-                
-                // Hide payment modal
                 modal.classList.remove("active");
-
-                // Reset submit button state
                 payBtn.disabled = false;
                 payBtn.innerHTML = origText;
 
-                // Refresh fee content views
                 loadFeesData();
 
-                // Display success receipt modal
                 triggerReceiptReceiptPopup({
                     txnId: data.transaction.id,
                     date: data.transaction.date,
