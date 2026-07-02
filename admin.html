@@ -66,12 +66,15 @@
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" id="student-search" placeholder="Search student by name/ID...">
                 </div>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button id="add-student-btn" class="action-btn" style="flex: 1; padding: 8px; font-size: 0.8rem; background: var(--color-primary-glow); border: 1px solid var(--border-color-glow); color: var(--color-primary); height: 36px; justify-content: center;">
-                        <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Add Student
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
+                    <button id="add-student-btn" class="action-btn" style="grid-column: span 2; padding: 8px; font-size: 0.8rem; background: var(--color-primary-glow); border: 1px solid var(--border-color-glow); color: var(--color-primary); height: 36px; justify-content: center; width: 100%;">
+                        <i class="fas fa-user-plus" style="margin-right: 6px;"></i> Register New Student
                     </button>
-                    <button id="manage-circulars-btn" class="action-btn" style="flex: 1; padding: 8px; font-size: 0.8rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: var(--warning); height: 36px; justify-content: center;">
+                    <button id="manage-circulars-btn" class="action-btn" style="padding: 8px; font-size: 0.8rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: var(--warning); height: 36px; justify-content: center; width: 100%;">
                         <i class="fas fa-bullhorn" style="margin-right: 6px;"></i> Circulars
+                    </button>
+                    <button id="manage-batch-attendance-btn" class="action-btn" style="padding: 8px; font-size: 0.8rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: var(--success); height: 36px; justify-content: center; width: 100%;">
+                        <i class="fas fa-calendar-check" style="margin-right: 6px;"></i> Attendance
                     </button>
                 </div>
             </div>
@@ -242,29 +245,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Batch Attendance Entry Card -->
-                                    <div class="glass-panel" style="padding: 20px; border-radius: var(--border-radius-md); background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.1); margin-top: 25px;">
-                                        <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--text-bright); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                                            <i class="fas fa-users-slash" style="color: var(--danger);"></i> Quick Batch Attendance Registrar (June 2026)
-                                        </h4>
-                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">
-                                            Specify a June calendar day number and list the absent students (by username or full name). All other registered students will automatically be marked present.
-                                        </p>
-                                        <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
-                                            <div class="form-group" style="margin-bottom: 0; width: 120px;">
-                                                <label class="form-label" style="font-size: 0.75rem;">June Day # (1-30)</label>
-                                                <input type="number" id="batch-attend-day" class="form-input" min="1" max="30" value="1" style="text-align: center;">
-                                            </div>
-                                            <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 250px;">
-                                                <label class="form-label" style="font-size: 0.75rem;">Absent Student Names / Usernames (separated by commas)</label>
-                                                <input type="text" id="batch-attend-absentees" class="form-input" placeholder="e.g. alice, bob, Testing Student">
-                                            </div>
-                                            <button id="submit-batch-attend-btn" type="button" class="action-btn danger-btn-action" style="padding: 10px 20px; font-size: 0.85rem; height: 38px; width: auto; min-width: 140px;">
-                                                <i class="fas fa-users-slash" style="margin-right: 6px;"></i> Mark Attendance
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -410,6 +390,43 @@
                             <!-- Injected dynamically via JS -->
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Global Batch Attendance Workspace -->
+            <div id="workspace-batch-attendance" class="workspace-editor hidden" style="padding: 30px;">
+                <header class="workspace-header" style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                    <div class="header-student-profile">
+                        <div class="student-avatar-lg" style="background: rgba(16, 185, 129, 0.15); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-radius: 12px; width: 50px; height: 50px;">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h1 style="font-size: 1.4rem; font-weight: 700; color: var(--text-bright); margin-bottom: 4px;">Quick Batch Attendance Registrar</h1>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Mark attendance across all students for a specific calendar day in June 2026.</p>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="glass-panel" style="padding: 24px; border-radius: var(--border-radius-lg); max-width: 800px; background: rgba(255, 255, 255, 0.02);">
+                    <h3 class="section-subtitle" style="margin-top: 0; margin-bottom: 15px; font-size: 1rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-users-slash" style="color: var(--danger);"></i> Mark June Day Attendance
+                    </h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+                        Specify a day number in June. Enter the names or usernames of students who are **Absent** (separated by commas). Any student not listed here will automatically be marked as **Present** for that day.
+                    </p>
+                    <form id="global-batch-attendance-form" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="form-group" style="width: 150px;">
+                            <label class="form-label">June Day # (1-30)</label>
+                            <input type="number" id="batch-attend-day" class="form-input" min="1" max="30" value="1" style="text-align: center; font-size: 1.1rem; font-weight: bold;" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Absent Students List</label>
+                            <textarea id="batch-attend-absentees" class="form-input" placeholder="Enter usernames or names separated by commas (e.g. alice, bob, charlie)" style="min-height: 100px; font-family: inherit; padding: 12px; resize: vertical;"></textarea>
+                        </div>
+                        <button type="submit" class="action-btn success-btn-action" style="width: auto; align-self: flex-start; padding: 10px 24px;">
+                            <i class="fas fa-users-slash" style="margin-right: 6px;"></i> Mark Attendance
+                        </button>
+                    </form>
                 </div>
             </div>
 

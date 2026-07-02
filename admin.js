@@ -184,6 +184,8 @@ async function selectStudent(username) {
 
             // Display Workspace Editor
             document.getElementById("workspace-placeholder").classList.add("hidden");
+            document.getElementById("workspace-circulars").classList.add("hidden");
+            document.getElementById("workspace-batch-attendance").classList.add("hidden");
             document.getElementById("workspace-editor").classList.remove("hidden");
 
             // Render details
@@ -761,6 +763,7 @@ function setupAdminCirculars() {
             // Toggle workspaces visibility
             document.getElementById("workspace-placeholder").classList.add("hidden");
             document.getElementById("workspace-editor").classList.add("hidden");
+            document.getElementById("workspace-batch-attendance").classList.add("hidden");
             document.getElementById("workspace-circulars").classList.remove("hidden");
 
             // Load and display circulars
@@ -882,57 +885,69 @@ function renderAdminCirculars() {
 }
 
 function setupBatchAttendance() {
-    const batchBtn = document.getElementById("submit-batch-attend-btn");
-    if (!batchBtn) return;
+    const manageBtn = document.getElementById("manage-batch-attendance-btn");
+    const batchForm = document.getElementById("global-batch-attendance-form");
 
-    batchBtn.addEventListener("click", async () => {
-        const dayInput = document.getElementById("batch-attend-day");
-        const listInput = document.getElementById("batch-attend-absentees");
-
-        const dayVal = parseInt(dayInput.value);
-        if (isNaN(dayVal) || dayVal < 1 || dayVal > 30) {
-            showToast("Invalid Input", "Please enter a valid day number for June 2026 (1-30).", "error");
-            return;
-        }
-
-        const absentees = listInput.value.split(",")
-            .map(x => x.trim())
-            .filter(x => x.length > 0);
-
-        batchBtn.disabled = true;
-        const origText = batchBtn.innerHTML;
-        batchBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Syncing...`;
-
-        try {
-            const res = await fetch(`${API_BASE}/admin/batch-attendance`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ day: dayVal, absentees })
+    if (manageBtn) {
+        manageBtn.addEventListener("click", () => {
+            // Unselect any selected student in the list
+            selectedStudent = null;
+            document.querySelectorAll(".student-list-item").forEach(item => {
+                item.classList.remove("active");
             });
 
-            if (res.ok) {
-                showToast("Batch Registered", `Attendance marked for Day ${dayVal}. Absentees: ${absentees.length}`, "success");
-                listInput.value = "";
-                
-                // Refresh local database caches
-                await loadStudentsRegistry();
-                
-                // If a student is currently open, refresh their editor workspace to show updated calendar grid
-                if (selectedStudent) {
-                    // Update state to match new database values
-                    const fresh = studentsList.find(s => s.username === selectedStudent.username);
-                    if (fresh) {
-                        selectStudent(fresh.username);
-                    }
-                }
-            } else {
-                showToast("Update Error", "Server rejected batch registration request.", "error");
+            // Toggle workspaces visibility
+            document.getElementById("workspace-placeholder").classList.add("hidden");
+            document.getElementById("workspace-editor").classList.add("hidden");
+            document.getElementById("workspace-circulars").classList.add("hidden");
+            document.getElementById("workspace-batch-attendance").classList.remove("hidden");
+        });
+    }
+
+    if (batchForm) {
+        batchForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const dayInput = document.getElementById("batch-attend-day");
+            const listInput = document.getElementById("batch-attend-absentees");
+            const batchBtn = batchForm.querySelector('button[type="submit"]');
+
+            const dayVal = parseInt(dayInput.value);
+            if (isNaN(dayVal) || dayVal < 1 || dayVal > 30) {
+                showToast("Invalid Input", "Please enter a valid day number for June 2026 (1-30).", "error");
+                return;
             }
-        } catch (err) {
-            showToast("Offline Error", "Server unreachable. Attendance sync failed.", "error");
-        } finally {
-            batchBtn.disabled = false;
-            batchBtn.innerHTML = origText;
-        }
-    });
+
+            const absentees = listInput.value.split(",")
+                .map(x => x.trim())
+                .filter(x => x.length > 0);
+
+            batchBtn.disabled = true;
+            const origText = batchBtn.innerHTML;
+            batchBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registering...`;
+
+            try {
+                const res = await fetch(`${API_BASE}/admin/batch-attendance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ day: dayVal, absentees })
+                });
+
+                if (res.ok) {
+                    showToast("Batch Registered", `Attendance marked for Day ${dayVal}. Absentees: ${absentees.length}`, "success");
+                    listInput.value = "";
+                    
+                    // Refresh local database caches
+                    await loadStudentsRegistry();
+                } else {
+                    showToast("Update Error", "Server rejected batch registration request.", "error");
+                }
+            } catch (err) {
+                showToast("Offline Error", "Server unreachable. Attendance sync failed.", "error");
+            } finally {
+                batchBtn.disabled = false;
+                batchBtn.innerHTML = origText;
+            }
+        });
+    }
 }
